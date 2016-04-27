@@ -10,6 +10,7 @@
 * Testing your project
 * Benchmarking your project
 * Code quality controll
+* Remote debugging
 
 ## WorkFlow:
 
@@ -34,6 +35,12 @@ stack push <your stack server url>
 ```
 stack bench <your test case scripts>
 ```
+
+* Remote Debugging
+```
+stack debug remote
+```
+visit your stack server via `address:8888`
 
 * You can also call `wraped tools` directly.
 
