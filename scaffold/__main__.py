@@ -5,7 +5,7 @@ from types import GeneratorType
 from functools import reduce
 from operator import concat
 
-params = dict(project=sys.argv[-1])
+params = dict(project=sys.argv[-1], __project__=sys.argv[-1])
 
 
 def do(xs: Generator):

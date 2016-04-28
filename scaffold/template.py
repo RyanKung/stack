@@ -16,9 +16,14 @@ VALID_FILENAMES = set(['.gitignore'])
 VALID_PROJECT = re.compile('[a-zA-Z0-9.-]{2,}')
 
 
-def filename_template(n: str, params: dict, placeholder='project') -> str:
+def replace_filename(n: str, params: dict, placeholder='project') -> str:
     '''replace placeholder from filename'''
-    return n.replace('__%s__' % placeholder, params[placeholder])
+    return n.replace('__%s__' % placeholder, params[placeholder].split('/')[-1])
+
+
+def replace_content(n: str, params: dict, placeholder='project') -> str:
+    '''replace placeholder from filename'''
+    return n.replace('__%s__' % placeholder, params[placeholder].split('/')[-1])
 
 
 def is_invalid_folder(n: str) -> bool:
@@ -44,16 +49,19 @@ def render(src: str, dist: str, params: dict) -> Iterable:
 
     if not os.path.exists(dist):
         os.mkdir(dist)
+    else:
+        logging.error('path exists')
+        exit(1)
 
     def map_files(filename: str, current: str, target: str) -> IO:
         '''file and filename mapper'''
         if is_invalid_file(filename) or is_invalid_path(current):
             return None
-        logging.info('mapping file %s from %s to %s' % (filename, current, target))
-        filename = filename_template(filename, params)
+        print('mapping file %s from %s to %s' % (filename, current, target))
+        filename = replace_filename(filename, params)
         srcpath, distpath = os.path.join(current, filename), os.path.join(target, filename)
         with open(srcpath, 'r') as f:
-            content = string.Template(f.read())
+            content = string.Template(replace_content(f.read(), params))
         with open(distpath, 'w') as f:
             f.write(content.safe_substitute(params))
 
@@ -61,13 +69,13 @@ def render(src: str, dist: str, params: dict) -> Iterable:
         '''folder napper'''
         if is_invalid_folder(name) or is_invalid_path(current):
             return None
-        logging.info('maping folder %s from %s to %s' % (name, current, target))
-        foldername = filename_template(name, params)
+        print('maping folder %s from %s to %s' % (name, current, target))
+        foldername = replace_filename(name, params)
         os.mkdir(os.path.join(target, foldername))
 
     def render_all(current, folders, files):
         '''map and render all'''
-        target = filename_template(current.replace(src, dist), params)
+        target = replace_filename(current.replace(src, dist), params)
         return chain(map(partial(map_folders, current=current, target=target), folders),
                      map(partial(map_files, current=current, target=target), files))
 
