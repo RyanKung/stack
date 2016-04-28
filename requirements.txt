@@ -1,0 +1,5 @@
+ecdsa==0.13
+Fabric3==1.10.2.post3
+paramiko==1.16.0
+pycrypto==2.6.1
+six==1.10.0
