@@ -3,12 +3,16 @@
 import os
 import re
 import string
+import logging
 from operator import contains
 from functools import partial
 from typing import Iterable
 from scaffold.types import IO
+from itertools import starmap, chain
 
-_VALID_FILENAMES = set(['.gitignore'])
+__all__ = ['render']
+
+VALID_FILENAMES = set(['.gitignore'])
 VALID_PROJECT = re.compile('[a-zA-Z0-9.-]{2,}')
 
 
@@ -22,11 +26,16 @@ def is_invalid_folder(n: str) -> bool:
     return n.startswith('.')
 
 
+def is_invalid_path(n: str) -> bool:
+    '''A valid folder should not startwith .'''
+    return any(filter(partial(contains, n), ['.git', '.venv']))
+
+
 def is_invalid_file(n: str) -> bool:
     '''A valid file should not end with pyc or pyo or py~(emacs temp file)'''
-    return any([contains(_VALID_FILENAMES, n),
-                n.startwith('.'),
-                n.endwith('.pyc', '.pyo', '.py~')])
+    return any([contains(VALID_FILENAMES, n),
+                n.startswith('.'),
+                n.endswith(('.pyc', '.pyo', '.py~'))])
 
 
 def render(src: str, dist: str, params: dict) -> Iterable:
@@ -38,8 +47,9 @@ def render(src: str, dist: str, params: dict) -> Iterable:
 
     def map_files(filename: str, current: str, target: str) -> IO:
         '''file and filename mapper'''
-        if is_invalid_file(filename):
+        if is_invalid_file(filename) or is_invalid_path(current):
             return None
+        print('mapping file %s from %s to %s' % (filename, current, target))
         filename = filename_template(filename, params)
         srcpath, distpath = os.path.join(current, filename), os.path.join(target, filename)
         with open(srcpath, 'r') as f:
@@ -49,15 +59,16 @@ def render(src: str, dist: str, params: dict) -> Iterable:
 
     def map_folders(name: str, current: str, target: str) -> IO:
         '''folder napper'''
-        if is_invalid_folder(name):
+        if is_invalid_folder(name) or is_invalid_path(current):
             return None
+        print('maping folder %s from %s to %s' % (name, current, target))
         foldername = filename_template(name, params)
         os.mkdir(os.path.join(target, foldername))
 
-    def render_all(folders, files, current):
-        '''map all'''
+    def render_all(current, folders, files):
+        '''map and render all'''
         target = filename_template(current.replace(src, dist), params)
-        return zip(map(partial(map_folders, current=current, target=target), folders),
-                   map(partial(map_files, current=current, target=target), folders))
+        return chain(map(partial(map_folders, current=current, target=target), folders),
+                     map(partial(map_files, current=current, target=target), files))
 
-    return map(render_all, os.walk(src))
+    return starmap(render_all, os.walk(src))
