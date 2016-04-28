@@ -49,7 +49,7 @@ def render(src: str, dist: str, params: dict) -> Iterable:
         '''file and filename mapper'''
         if is_invalid_file(filename) or is_invalid_path(current):
             return None
-        print('mapping file %s from %s to %s' % (filename, current, target))
+        logging.info('mapping file %s from %s to %s' % (filename, current, target))
         filename = filename_template(filename, params)
         srcpath, distpath = os.path.join(current, filename), os.path.join(target, filename)
         with open(srcpath, 'r') as f:
@@ -61,7 +61,7 @@ def render(src: str, dist: str, params: dict) -> Iterable:
         '''folder napper'''
         if is_invalid_folder(name) or is_invalid_path(current):
             return None
-        print('maping folder %s from %s to %s' % (name, current, target))
+        logging.info('maping folder %s from %s to %s' % (name, current, target))
         foldername = filename_template(name, params)
         os.mkdir(os.path.join(target, foldername))
 
