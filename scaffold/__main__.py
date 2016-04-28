@@ -1,5 +1,7 @@
 import sys
 from scaffold.template import render
 
+do = list
+
 params = dict(project=sys.argv[-1])
-render(*sys.argv[-3:-1], params)
+do(render(*sys.argv[-3:-1], params))
