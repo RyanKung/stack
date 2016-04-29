@@ -79,4 +79,4 @@ def render(src: str, dist: str, params: dict) -> Iterable:
         return chain(map(partial(map_folders, current=current, target=target), folders),
                      map(partial(map_files, current=current, target=target), files))
 
-    return starmap(render_all, os.walk(src))
+    return chain.from_iterable(starmap(render_all, os.walk(src)))

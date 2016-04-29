@@ -15,4 +15,5 @@ new_project_parser.add_argument('--remote', metavar='PATH', type=str, help='Exte
 def main():
     args = parser.parse_args()
     template_params = dict(project=args.project, __project__=args.project)
-    return list(render(args.template, template_params))
+    list(render(args.template, args.project, template_params))
+    return
