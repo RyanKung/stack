@@ -3,36 +3,35 @@ import sys
 import os
 from typing import Callable
 from stack.args import parser
-from fabric.main import main as fab_main
-from scaffold.main import main as scaffold_main
-from virtualenv import main as virtualenv_main
-from pip import main as pip_main
+import fabric
+import scaffold
+import virtualenv
+import pip
 
 
 def new(args):
-    return scaffold_main()
+    return scaffold.main()
 
 
 def init(args):
     sys.argv[1] = '.env'
-    return virtualenv_main()
+    return virtualenv.main()
 
 
 def install(args):
-    return pip_main()
+    return pip.main()
 
 
 def uninstall(args):
-    return pip_main()
+    return pip.main()
 
 
 def list_installed(args):
-    sys.argv[1] = 'freeze'
-    return pip_main()
+    list(map(print, pip.commands.freeze.freeze()))
 
 
 def fabric_main(args):
-    return fab_main([os.path.abspath(__file__)])
+    return fabric.main.main([os.path.abspath(__file__)])
 
 
 def router(argv) -> Callable:

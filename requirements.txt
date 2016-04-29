@@ -1,5 +1,8 @@
+cffi==1.6.0
 ecdsa==0.13
 Fabric3==1.10.2.post3
 paramiko==1.16.0
+pycparser==2.14
 pycrypto==2.6.1
 six==1.10.0
+virtualenv==15.0.1
