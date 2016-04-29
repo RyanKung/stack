@@ -1,10 +1,36 @@
 # -*- coding: utf-8 -*-
-import re
 import sys
+from typing import Callable
+# import re
 # from fabric.main import main
 from stack.args import parser
 
-if __name__ == '__main__':
-    parser.parse_args()
-    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-    # sys.exit(main([os.path.abspath(__file__)]))
+
+def new(args):
+    from stack.scaffold.template import render
+    template_params = dict(project=args.project, __project__=args.project)
+    return list(render(args.template, template_params))
+
+
+def install(args):
+    pass
+
+
+def uninstall(args):
+    pass
+
+
+def router(argv) -> Callable:
+    return {
+        'new': new,
+        'install': install,
+        'pass': uninstall
+    }.get(argv['1'])
+
+
+def main(argv, kwargs):
+    return router(argv[1])(kwargs)
+
+sys.exit(main(sys.argv, parser.parse_args()))
+# sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+# sys.exit(main([os.path.abspath(__file__)]))
