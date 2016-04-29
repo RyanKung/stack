@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
+import re
+import os
 from typing import Callable
-# import re
-# from fabric.main import main
 from stack.args import parser
 
 
@@ -20,12 +20,18 @@ def uninstall(args):
     pass
 
 
+def fab_main(args):
+    from fabric.main import main as fab_main
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    return lambda x: fab_main([os.path.abspath(__file__)])
+
+
 def router(argv) -> Callable:
     return {
         'new': new,
         'install': install,
         'pass': uninstall
-    }.get(argv['1'])
+    }.get(argv['1'], fab_main)
 
 
 def main(argv, kwargs):
