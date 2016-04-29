@@ -15,8 +15,9 @@ with open('requirements.txt', 'r') as f:
     requires = [x.strip() for x in f if x.strip()]
 
 setup(
-    name='stack',
+    name='python-stack',
     version='0.0.1',
+    url='www.darwintree.org',
     description='`stack` is a Python version of [stack](http://docs.haskellstack.org/en/stable/README/),',
     author='Ryan Kung',
     author_email='ryankung@ieee.org;kongzhen@xunlei.com',
