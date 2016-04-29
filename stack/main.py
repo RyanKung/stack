@@ -13,11 +13,16 @@ def new(args):
     return list(render(args.template, template_params))
 
 
-def install(args):
+def pip_install(args):
     return pip_main()
 
 
-def uninstall(args):
+def pip_uninstall(args):
+    return pip_main()
+
+
+def pip_list(args):
+    sys.argv[1] = 'freeze'
     return pip_main()
 
 
@@ -28,8 +33,9 @@ def fabric_main(args):
 def router(argv) -> Callable:
     return {
         'new': new,
-        'install': install,
-        'pass': uninstall
+        'list': pip_list,
+        'install': pip_install,
+        'pass': pip_uninstall
     }.get(argv[1], fabric_main)
 
 
