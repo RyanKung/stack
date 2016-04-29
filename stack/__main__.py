@@ -20,7 +20,7 @@ def uninstall(args):
     pass
 
 
-def fab_main(args):
+def fabric_main(args):
     from fabric.main import main as fab_main
     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
     return lambda x: fab_main([os.path.abspath(__file__)])
@@ -31,7 +31,7 @@ def router(argv) -> Callable:
         'new': new,
         'install': install,
         'pass': uninstall
-    }.get(argv['1'], fab_main)
+    }.get(argv['1'], fabric_main)
 
 
 def main(argv, kwargs):
