@@ -4,13 +4,12 @@ import os
 from typing import Callable
 from stack.args import parser
 from fabric.main import main as fab_main
+from scaffold.main import main as scaffold_main
 from pip import main as pip_main
 
 
 def new(args):
-    from stack.scaffold.template import render
-    template_params = dict(project=args.project, __project__=args.project)
-    return list(render(args.template, template_params))
+    return scaffold_main()
 
 
 def pip_install(args):
