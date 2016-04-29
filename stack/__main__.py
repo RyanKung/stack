@@ -4,6 +4,8 @@ import re
 import os
 from typing import Callable
 from stack.args import parser
+from fabric.main import main as fab_main
+from pip import main as pip_main
 
 
 def new(args):
@@ -13,17 +15,15 @@ def new(args):
 
 
 def install(args):
-    pass
+    return pip_main()
 
 
 def uninstall(args):
-    pass
+    return pip_main()
 
 
 def fabric_main(args):
-    from fabric.main import main as fab_main
-    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-    return lambda x: fab_main([os.path.abspath(__file__)])
+    return fab_main([os.path.abspath(__file__)])
 
 
 def router(argv) -> Callable:
@@ -31,10 +31,11 @@ def router(argv) -> Callable:
         'new': new,
         'install': install,
         'pass': uninstall
-    }.get(argv['1'], fabric_main)
+    }.get(argv[1], fabric_main)
 
 
 def main(argv, kwargs):
-    return router(argv[1])(kwargs)
+    return router(argv)(kwargs)
 
+sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
 sys.exit(main(sys.argv, parser.parse_args()))
