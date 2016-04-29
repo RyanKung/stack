@@ -5,6 +5,7 @@ from typing import Callable
 from stack.args import parser
 from fabric.main import main as fab_main
 from scaffold.main import main as scaffold_main
+from virtualenv import main as virtualenv_main
 from pip import main as pip_main
 
 
@@ -12,15 +13,20 @@ def new(args):
     return scaffold_main()
 
 
-def pip_install(args):
+def init(args):
+    sys.argv[1] = '.env'
+    return virtualenv_main()
+
+
+def install(args):
     return pip_main()
 
 
-def pip_uninstall(args):
+def uninstall(args):
     return pip_main()
 
 
-def pip_list(args):
+def list_installed(args):
     sys.argv[1] = 'freeze'
     return pip_main()
 
@@ -32,9 +38,10 @@ def fabric_main(args):
 def router(argv) -> Callable:
     return {
         'new': new,
-        'list': pip_list,
-        'install': pip_install,
-        'pass': pip_uninstall
+        'init': init,
+        'list': list_installed,
+        'install': install,
+        'pass': uninstall
     }.get(argv[1], fabric_main)
 
 
