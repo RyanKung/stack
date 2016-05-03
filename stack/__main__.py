@@ -1,3 +1,4 @@
+#!.env/bin/python
 import sys
 import re
 from stack.main import main
