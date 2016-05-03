@@ -59,6 +59,10 @@ def pip_exec(args):
     return local('.env/bin/pip')
 
 
+def git_serve(args):
+    return local('git daemon --reuseaddr --base-path=. --export-all --verbose --enable=receive-pack --port=30976')
+
+
 def router(argv) -> Callable:
     args = parser.parse_args()
     if not len(argv) > 1:
@@ -72,7 +76,8 @@ def router(argv) -> Callable:
         'init': init,
         'list': list_installed,
         'install': install,
-        'pass': uninstall
+        'pass': uninstall,
+        'serve': git_serve
     }.get(argv[1], fabric)(args)
 
 
