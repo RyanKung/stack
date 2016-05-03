@@ -16,7 +16,7 @@ with open('requirements.txt', 'r') as f:
 
 setup(
     name='python-stack',
-    version='0.0.1',
+    version='0.0.2',
     url='www.darwintree.org',
     description='`stack` is a Python version of [stack](http://docs.haskellstack.org/en/stable/README/),',
     author='Ryan Kung',
