@@ -1,4 +1,5 @@
 cffi==1.6.0
+PyYAML==3.11
 ecdsa==0.13
 Fabric3==1.10.2.post3
 paramiko==1.16.0

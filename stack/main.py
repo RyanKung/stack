@@ -3,6 +3,7 @@ import sys
 import os
 from typing import Callable
 from stack.args import parser
+import stack.config as config
 import scaffold.main as scaffold_main
 import fabric.main as fabric_main
 from fabric.api import local
@@ -23,7 +24,9 @@ def init(args):
     except:
         pass
     local('virtualenv .env --python=%s' % python)
-    local('.env/bin/pip install ipython')
+    local('.env/bin/pip install ipython coverage flake8 nose')
+    projectname = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
+    config.write(dict(python=python, project=projectname))
 
 
 def install(args):
@@ -45,6 +48,11 @@ def list_installed(args):
 
 def fabric(args):
     return fabric_main.main([os.path.abspath(__file__)])
+
+
+def coverage(args):
+    project = config.load().get('project')
+    return local('.env/bin/nosetests -sv --with-coverage --cover-package %s' % project)
 
 
 def python(args):
@@ -77,7 +85,8 @@ def router(argv) -> Callable:
         'list': list_installed,
         'install': install,
         'pass': uninstall,
-        'serve': git_serve
+        'serve': git_serve,
+        'coverage': coverage,
     }.get(argv[1], fabric)(args)
 
 
