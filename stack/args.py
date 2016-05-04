@@ -1,6 +1,8 @@
 # coding:utf8
 import argparse
+import os
 
+current_path = os.path.dirname(os.path.abspath(__file__))
 
 parser = argparse.ArgumentParser(description='Stack - The Python Tool Stack')
 parser.usage = 'python -m stack [-h]'
@@ -9,7 +11,7 @@ subparsers = parser.add_subparsers(title='Available options:', help='Run `copymo
 # stack new project template --remote
 new_project_parser = subparsers.add_parser('new', help='Initalize a new project based an template')
 new_project_parser.add_argument('project', metavar='PROJECT', type=str, help='Your project name.')
-new_project_parser.add_argument('-t', '--template', metavar='PATH', type=str, help='External template path')
+new_project_parser.add_argument('-t', '--template', metavar='template', type=str, help='External template path', default='%s/template/default' % current_path)
 new_project_parser.add_argument('--remote', metavar='PATH', type=str, help='External template path')
 
 # stack init

@@ -4,13 +4,12 @@ import os
 from typing import Callable
 from stack.args import parser
 import stack.config as config
-import scaffold.main as scaffold_main
 import fabric.main as fabric_main
 from fabric.api import local
 
 
 def new(args):
-    return scaffold_main.main()
+    local('scaffold new %s %s' % (args.project, args.template))
 
 
 def upgrade(args):
