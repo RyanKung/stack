@@ -29,7 +29,7 @@ def init(args):
 
 
 def install(args):
-    git = bool(args.install.python) or 'False'
+    git = bool(args.git)
     if not git:
         local('.env/bin/pip install %s' % args.lib)
     if git:

@@ -22,7 +22,7 @@ init_project_parser.add_argument('--python', metavar='PATH', type=str, help='Ver
 # stack install
 install_parser = subparsers.add_parser('install', help='Install libs from pypi or git repos')
 install_parser.add_argument('lib', metavar='LIB', type=str, help='Repo path or name of lib')
-install_parser.add_argument('--git', metavar='LIB', type=str, help='Declare a git repo')
+install_parser.add_argument('--git', metavar='LIB', type=str, help='Declare a git repo', default=False)
 
 # stack uninstall
 install_parser = subparsers.add_parser('uninstall', help='Uninstall libs')
