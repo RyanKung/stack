@@ -30,16 +30,16 @@ def init(args):
 
 
 def install(args):
-    git = bool(args.python) or 'False'
+    git = bool(args.install.python) or 'False'
     if not git:
-        local('.env/bin/pip install %s' % args.module)
+        local('.env/bin/pip install %s' % args.lib)
     if git:
-        local('.env/bin/pip install -e git+%s' % args.module)
+        local('.env/bin/pip install -e git+%s' % args.lib)
     local('.env/bin/pip freeze > requirements.txt')
 
 
 def uninstall(args):
-    return local('.env/bin/pip uninstall %s' % args.module)
+    return local('.env/bin/pip uninstall %s' % args.lib)
 
 
 def list_installed(args):
@@ -68,7 +68,9 @@ def pip_exec(args):
 
 
 def git_serve(args):
-    return local('git daemon --reuseaddr --base-path=. --export-all --verbose --enable=receive-pack --port=30976')
+    port = args.port or '30976'
+    ip = args.ip or '0.0.0.0'
+    return local('git daemon --reuseaddr --base-path=. --export-all --verbose --enable=receive-pack --port=%s --listen=%s' % (port, ip))
 
 
 def router(argv) -> Callable:
@@ -83,6 +85,7 @@ def router(argv) -> Callable:
         'python': python,
         'init': init,
         'list': list_installed,
+        'uninstall': uninstall,
         'install': install,
         'pass': uninstall,
         'serve': git_serve,

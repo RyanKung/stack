@@ -19,19 +19,22 @@ init_project_parser.add_argument('--python', metavar='PATH', type=str, help='Ver
 
 # stack install
 install_parser = subparsers.add_parser('install', help='Install libs from pypi or git repos')
-install_parser.add_argument('module', metavar='LIB', type=str, help='Repo path or name of lib')
+install_parser.add_argument('lib', metavar='LIB', type=str, help='Repo path or name of lib')
 install_parser.add_argument('--git', metavar='LIB', type=str, help='Declare a git repo')
 
 # stack uninstall
 install_parser = subparsers.add_parser('uninstall', help='Uninstall libs')
-install_parser.add_argument('module', metavar='LIB', type=str, help='Lib name')
+install_parser.add_argument('lib', metavar='LIB', type=str, help='Lib name')
 
 # stack list
 install_parser = subparsers.add_parser('list', help='List installed libs')
 
+# stack_serve
+serve_parser = subparsers.add_parser('serve', help='Serve current dir as git server')
+serve_parser.add_argument('--ip', help='IP addr')
+serve_parser.add_argument('--port', help='Port')
 # stack python
 subparsers.add_parser('python', help='Run Python')
 subparsers.add_parser('repl', help='Run a iPython repl')
 subparsers.add_parser('pip', help='Run Pip')
-subparsers.add_parser('serve', help='Serve current dir as git server')
 subparsers.add_parser('coverage', help='Run unittest with coverage testing')
