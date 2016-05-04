@@ -11,7 +11,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-with open('requirements.txt', 'r') as f:
+with open('./requirements.txt', 'r') as f:
     requires = [x.strip() for x in f if x.strip()]
 
 setup(
