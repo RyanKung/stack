@@ -55,7 +55,7 @@ def coverage(args):
 
 
 def python(args):
-    return local('.env/bin/python')
+    return local('.env/bin/python %s' % ' '.join(sys.argv[2:]))
 
 
 def repl(args):
@@ -73,7 +73,7 @@ def git_serve(args):
 
 
 def router(argv) -> Callable:
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
     if not len(argv) > 1:
         print(parser.format_help())
         return
