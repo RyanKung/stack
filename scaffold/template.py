@@ -60,10 +60,13 @@ def render(src: str, dist: str, params: dict) -> Iterable:
         print('mapping file %s from %s to %s' % (filename, current, target))
         filename = replace_filename(filename, params)
         srcpath, distpath = os.path.join(current, filename), os.path.join(target, filename)
-        with open(srcpath, 'r') as f:
-            content = string.Template(replace_content(f.read(), params))
-        with open(distpath, 'w') as f:
-            f.write(content.safe_substitute(params))
+        try:
+            with open(srcpath, 'r') as f:
+                content = string.Template(replace_content(f.read(), params))
+            with open(distpath, 'w') as f:
+                f.write(content.safe_substitute(params))
+        except:
+            pass
 
     def map_folders(name: str, current: str, target: str) -> IO:
         '''folder napper'''
@@ -71,7 +74,10 @@ def render(src: str, dist: str, params: dict) -> Iterable:
             return None
         print('maping folder %s from %s to %s' % (name, current, target))
         foldername = replace_filename(name, params)
-        os.mkdir(os.path.join(target, foldername))
+        try:
+            os.mkdir(os.path.join(target, foldername))
+        except:
+            pass
 
     def render_all(current, folders, files):
         '''map and render all'''
