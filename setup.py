@@ -19,7 +19,7 @@ except ImportError:
 with open('requirements.txt', 'r') as f:
     requires = [x.strip() for x in f if x.strip()]
 
-with open('Readme.md', 'r') as f:
+with open('README.md', 'r') as f:
     readme = f.read()
 
 
