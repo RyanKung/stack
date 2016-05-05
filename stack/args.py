@@ -37,6 +37,7 @@ serve_parser.add_argument('--ip', help='IP addr')
 serve_parser.add_argument('--port', help='Port')
 # stack python
 subparsers.add_parser('python', help='Run Python')
+subparsers.add_parser('setup', help='Install libs from requirements')
 subparsers.add_parser('repl', help='Run a iPython repl')
 subparsers.add_parser('pip', help='Run Pip')
 subparsers.add_parser('coverage', help='Run unittest with coverage testing')

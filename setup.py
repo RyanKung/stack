@@ -25,8 +25,8 @@ with open('Readme.md', 'r') as f:
 
 setup(
     name='python-stack',
-    version='0.1.0.2',
-    url='www.darwintree.org',
+    version='0.1.0.3',
+    url='https://github.com/RyanKung/stack',
     description='`stack` is a Python version of [stack](http://docs.haskellstack.org/en/stable/README/),',
     author='Ryan Kung',
     author_email='ryankung@ieee.org',

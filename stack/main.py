@@ -8,6 +8,13 @@ import fabric.main as fabric_main
 from fabric.api import local
 
 
+def ignore(fn, value):
+    try:
+        return fn(value)
+    except:
+        return None
+
+
 def new(args):
     local('scaffold new %s %s' % (args.project, args.template))
 
@@ -18,15 +25,17 @@ def upgrade(args):
 
 def init(args):
     python = args.python or 'python3'
-    try:
-        local('rm -rf .env')
-    except:
-        pass
+    ignore(local, 'rm -rf .env')
     local('virtualenv .env --python=%s' % python)
     local('.env/bin/pip install -e git+https://github.com/RyanKung/pip.git@fixed_distlib#egg=pip')
     local('.env/bin/python -m pip install ipython coverage flake8 nose')
+    ignore(local, '.env/bin/pip install -r ./requirements.py')
     projectname = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
     config.write(dict(python=python, project=projectname))
+
+
+def setup(args):
+    ignore(local, '.env/bin/pip install -r ./requirements.py')
 
 
 def install(args):
@@ -87,6 +96,7 @@ def router(argv) -> Callable:
         'repl': repl,
         'test': test,
         'pip': pip_exec,
+        'setup': setup,
         'python': python,
         'init': init,
         'list': list_installed,
