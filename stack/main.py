@@ -23,8 +23,8 @@ def init(args):
     except:
         pass
     local('virtualenv .env --python=%s' % python)
-    local('.env/bin/python -m pip install ipython coverage flake8 nose')
     local('.env/bin/pip install -e git+https://github.com/RyanKung/pip.git@fixed_distlib#egg=pip')
+    local('.env/bin/python -m pip install ipython coverage flake8 nose')
     projectname = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
     config.write(dict(python=python, project=projectname))
 
@@ -51,7 +51,7 @@ def fabric(args):
 
 
 def test(args):
-    return local('.env/bin/nosetests --py3where .env/bin/ -sv')
+    return local('.env/bin/nosetests -sv')
 
 
 def coverage(args):
@@ -68,7 +68,7 @@ def repl(args):
 
 
 def pip_exec(args):
-    return local('.env/bin/pip')
+    return local('.env/bin/pip %s' % ' '.join(sys.argv[2:]))
 
 
 def git_serve(args):
