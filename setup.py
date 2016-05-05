@@ -2,7 +2,7 @@
 import sys
 
 if sys.version_info[:2] < (3, 5):
-    sys.exist('stack requires python 3.5 or higher')
+    sys.exit('stack requires python 3.5 or higher')
 
 
 try:
@@ -25,7 +25,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='python-stack',
-    version='0.1.0.4',
+    version='0.1.0.6',
     url='https://github.com/RyanKung/stack',
     description='`stack` is a Python version of [stack](http://docs.haskellstack.org/en/stable/README/),',
     author='Ryan Kung',
