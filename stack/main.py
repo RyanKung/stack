@@ -23,7 +23,8 @@ def init(args):
     except:
         pass
     local('virtualenv .env --python=%s' % python)
-    local('.env/bin/pip install ipython coverage flake8 nose')
+    local('.env/bin/python -m pip install ipython coverage flake8 nose')
+    local('.env/bin/pip install -e git+https://github.com/RyanKung/pip.git@fixed_distlib#egg=pip')
     projectname = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
     config.write(dict(python=python, project=projectname))
 
@@ -31,14 +32,14 @@ def init(args):
 def install(args):
     git = bool(args.git)
     if not git:
-        local('.env/bin/pip install %s' % args.lib)
+        local('.env/bin/pip install %s -v' % args.lib)
     if git:
-        local('.env/bin/pip install -e git+%s' % args.lib)
+        local('.env/bin/python -m pip install -e git+%s' % args.lib)
     local('.env/bin/pip freeze > requirements.txt')
 
 
 def uninstall(args):
-    return local('.env/bin/pip uninstall %s' % args.lib)
+    return local('.env/bin/python -m pip uninstall %s' % args.lib)
 
 
 def list_installed(args):
@@ -49,9 +50,13 @@ def fabric(args):
     return fabric_main.main([os.path.abspath(__file__)])
 
 
+def test(args):
+    return local('.env/bin/nosetests --py3where .env/bin/ -sv')
+
+
 def coverage(args):
     project = config.load().get('project')
-    return local('.env/bin/nosetests -sv --with-coverage --cover-package %s' % project)
+    return local('.env/bin/nosetests -sv --py3where .env/bin/ --with-coverage --cover-package %s' % project)
 
 
 def python(args):
@@ -80,6 +85,7 @@ def router(argv) -> Callable:
     return {
         'new': new,
         'repl': repl,
+        'test': test,
         'pip': pip_exec,
         'python': python,
         'init': init,
