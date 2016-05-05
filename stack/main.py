@@ -5,6 +5,7 @@ from typing import Callable
 from stack.args import parser
 import stack.config as config
 import fabric.main as fabric_main
+from fabric.api import local
 
 
 def ignore(fn, value):
@@ -26,25 +27,25 @@ def init(args):
     python = args.python or 'python3'
     ignore(os.system, 'rm -rf .env')
     os.system('virtualenv .env --python=%s' % python)
-    os.system('.env/bin/pip install -e git+https://github.com/RyanKung/pip.git@fixed_distlib#egg=pip')
+    os.system('.env/bin/pip install sl_pip')
     os.system('.env/bin/python -m pip install ipython coverage flake8 nose coverage')
-    ignore(os.system, '.env/bin/pip install -r ./requirements.py')
+    ignore(os.system, '.env/bin/pip install -r ./requirements.txt --process-dependency-links')
     projectname = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
     config.write(dict(python=python, project=projectname))
 
 
 def setup(args):
-    ignore(os.system, '.env/bin/pip install -r ./requirements.py')
+    ignore(os.system, '.env/bin/pip install -r ./requirements.txt --process-dependency-links')
 
 
 def install(args):
     git = bool(args.repo)
     if not git:
-        os.system('.env/bin/pip install %s -v' % args.lib)
+        os.system('.env/bin/pip install %s -v --process-dependency-links' % args.lib)
     if git:
         template = config.load().get('git_path', 'git+{repo}#egg={lib}')
         repo = template.format(**dict(repo=args.repo, lib=args.lib))
-        os.system('.env/bin/pip install -e %s' % repo)
+        os.system('.env/bin/pip install -e %s --process-dependency-links' % repo)
     os.system('.env/bin/pip freeze > requirements.txt')
 
 
