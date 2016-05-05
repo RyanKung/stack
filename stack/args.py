@@ -22,7 +22,8 @@ init_project_parser.add_argument('--python', metavar='PATH', type=str, help='Ver
 # stack install
 install_parser = subparsers.add_parser('install', help='Install libs from pypi or git repos')
 install_parser.add_argument('lib', metavar='LIB', type=str, help='Repo path or name of lib')
-install_parser.add_argument('--git', metavar='LIB', type=str, help='Declare a git repo', default=False)
+install_parser.add_argument('--repo', metavar='repo', type=str, help='Install via a git repo')
+install_parser.add_argument('--git', metavar='git', type=str, help='Declare is a git repo', default=False)
 
 # stack uninstall
 install_parser = subparsers.add_parser('uninstall', help='Uninstall libs')
@@ -35,6 +36,7 @@ install_parser = subparsers.add_parser('list', help='List installed libs')
 serve_parser = subparsers.add_parser('serve', help='Serve current dir as git server')
 serve_parser.add_argument('--ip', help='IP addr')
 serve_parser.add_argument('--port', help='Port')
+
 # stack python
 subparsers.add_parser('python', help='Run Python')
 subparsers.add_parser('setup', help='Install libs from requirements')
