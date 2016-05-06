@@ -5,10 +5,10 @@ from typing import Callable
 from stack.args import parser
 import stack.config as config
 import fabric.main as fabric_main
-from fabric.api import local
 
 
-def ignore(fn, value):
+def ignore(fn: Callable, value):
+    '''ignore exceptiong'''
     try:
         return fn(value)
     except:
@@ -82,6 +82,10 @@ def pip_exec(args):
     return os.system('.env/bin/pip %s' % ' '.join(sys.argv[2:]))
 
 
+def gen_document(args):
+    return os.system('sphinx-apidoc ./ -o ./docs -F')
+
+
 def git_serve(args):
     port = args.port or '30976'
     ip = args.ip or '0.0.0.0'
@@ -107,6 +111,7 @@ def router(argv) -> Callable:
         'pass': uninstall,
         'serve': git_serve,
         'coverage': coverage,
+        'doc': gen_document
     }.get(argv[1], fabric)(args)
 
 
