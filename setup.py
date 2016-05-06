@@ -19,13 +19,13 @@ except ImportError:
 with open('requirements.txt', 'r') as f:
     requires = [x.strip() for x in f if x.strip()]
 
-with open('README.md', 'r') as f:
+with open('README.rst', 'r') as f:
     readme = f.read()
 
 
 setup(
     name='python-stack',
-    version='0.1.0.6',
+    version='0.1.1.0',
     url='https://github.com/RyanKung/stack',
     description='`stack` is a Python version of [stack](http://docs.haskellstack.org/en/stable/README/),',
     author='Ryan Kung',
