@@ -89,6 +89,7 @@ def gen_document(args):
 def git_serve(args):
     port = args.port or '30976'
     ip = args.ip or '0.0.0.0'
+    print('git daemon will listen on %s:%s/.git' % (ip, port))
     return os.system('git daemon --reuseaddr --base-path=. --export-all --verbose --enable=receive-pack --port=%s --listen=%s' % (port, ip))
 
 
