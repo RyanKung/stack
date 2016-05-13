@@ -14,9 +14,9 @@ new_project_parser.add_argument('project', metavar='PROJECT', type=str, help='Yo
 new_project_parser.add_argument('-t', '--template', metavar='template', type=str, help='External template path', default='%s/template/default' % current_path)
 new_project_parser.add_argument('--remote', metavar='PATH', type=str, help='External template path')
 
-# stack init
-init_project_parser = subparsers.add_parser('init', help='Initalize a new project envirement')
-init_project_parser.add_argument('--python', metavar='PATH', type=str, help='Version of Python')
+# # stack init
+# init_project_parser = subparsers.add_parser('init', help='Initalize a new project envirement')
+# init_project_parser.add_argument('--python', metavar='PATH', type=str, help='Version of Python')
 
 
 # stack install
@@ -37,7 +37,9 @@ serve_parser = subparsers.add_parser('serve', help='Serve current dir as git ser
 serve_parser.add_argument('--ip', help='IP addr')
 serve_parser.add_argument('--port', help='Port')
 
+
 # stack python
+subparsers.add_parser('clear', help='Clear and delete virtual envirement')
 subparsers.add_parser('python', help='Run Python')
 subparsers.add_parser('setup', help='Install libs from requirements')
 subparsers.add_parser('repl', help='Run a iPython repl')

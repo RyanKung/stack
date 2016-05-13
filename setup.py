@@ -1,22 +1,20 @@
 # coding:utf8
 import sys
+from setuptools import setup, find_packages
+import os
+
+requirement_file = 'requirements.txt'
 
 if sys.version_info[:2] < (3, 5):
-    sys.exit('stack requires python 3.5 or higher')
+    os.system('pip install -r ./requirements2.txt')
+    os.system('python stack/stack_init.py')
+    os.system('python3 install setup.py')
+#    sys.exit('stack requires python 3.5 or higher')
 
+if sys.version_info[:2] < (2, 7):
+    sys.exit('stack requires python 2.7 or higher')
 
-try:
-    import distribute_setup
-    distribute_setup.use_setuptools()
-except:
-    pass
-
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from distutils.core import setup
-
-with open('requirements.txt', 'r') as f:
+with open(requirement_file, 'r') as f:
     requires = [x.strip() for x in f if x.strip()]
 
 with open('README.rst', 'r') as f:
@@ -25,14 +23,15 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='python-stack',
-    version='0.1.1.5',
+    version='0.1.1.6',
     url='http://python-stack.readthedocs.io',
     description='`stack` is a Python version of [stack](http://docs.haskellstack.org/en/stable/README/),',
     author='Ryan Kung',
+    py_modules=find_packages(exclude=['tests']),
     author_email='ryankung@ieee.org',
     license='MIT',
     long_description=readme,
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages(exclude=['tests', 'docs']),
     package_dir={'': '.'},
     tests_require=['nose'],
     install_requires=requires,
@@ -49,7 +48,9 @@ setup(
     entry_points={'console_scripts': [
         'stack = stack.main:main',
         'scaffold = scaffold.main:main',
-        'pystack = stack.main:main'
+        'pystack = stack.main:main',
+        'stack_init = stack.stack_init:main',
+        'pystack_init = stack.stack_init:main'
     ]},
 
 )

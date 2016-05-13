@@ -7,6 +7,9 @@ import stack.config as config
 import fabric.main as fabric_main
 
 
+config_file_exist = config.exist()
+
+
 def ignore(fn: Callable, value):
     '''ignore exceptiong'''
     try:
@@ -23,9 +26,16 @@ def upgrade(args):
     os.system('pip uninstall stack && pip install stack')
 
 
-def init(args):
-    python = args.python or 'python3'
+def clear(args):
     ignore(os.system, 'rm -rf .env')
+
+
+def init(args):
+    os.system('stack_init')
+
+
+def setup(args):
+    python = args.python or 'python3'
     os.system('virtualenv .env --python=%s' % python)
     os.system('.env/bin/pip install sl_pip')
     os.system('.env/bin/python -m pip install ipython coverage flake8 nose coverage')
@@ -34,11 +44,9 @@ def init(args):
     config.write(dict(python=python, project=projectname))
 
 
-def setup(args):
-    ignore(os.system, '.env/bin/pip install -r ./requirements.txt --process-dependency-links')
-
-
 def install(args):
+    if not args.lib:
+        ignore(os.system, '.env/bin/pip install -r ./requirements.txt --process-dependency-links')
     git = bool(args.repo)
     if not git:
         os.system('.env/bin/pip install %s -v --process-dependency-links' % args.lib)
@@ -106,6 +114,7 @@ def router(argv) -> Callable:
         'setup': setup,
         'python': python,
         'init': init,
+        'clear': clear,
         'list': list_installed,
         'uninstall': uninstall,
         'install': install,

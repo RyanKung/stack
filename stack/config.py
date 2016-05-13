@@ -2,9 +2,13 @@
 
 import yaml
 import time
-
+import os
 
 path = 'stack.yaml'
+
+
+def exist() -> bool:
+    return os.path.exists(path)
 
 
 def load() -> dict:
