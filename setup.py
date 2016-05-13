@@ -1,15 +1,10 @@
 # coding:utf8
 import sys
 from setuptools import setup, find_packages
-import os
 
 requirement_file = 'requirements.txt'
-
-if sys.version_info[:2] < (3, 5):
-    os.system('pip install -r ./requirements2.txt')
-    os.system('python stack/stack_init.py')
-    os.system('python3 install setup.py')
-#    sys.exit('stack requires python 3.5 or higher')
+if sys.version_info[:2] < (3, 5) and sys.argv[-1] == 'install':
+    requirement_file = 'requirements2.txt'
 
 if sys.version_info[:2] < (2, 7):
     sys.exit('stack requires python 2.7 or higher')
