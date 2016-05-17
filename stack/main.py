@@ -134,6 +134,10 @@ def main():
     if config.has_venv() and not util.is_venv():
         print('Warning: Command running outside the venv, you may need to run `stack init` first')
         print('Warning: Using lib path %s' % sysconfig.get_path('platlib'))
-        print('Info: Try switch ing to .env/bin/python')
-        util.python_switcher('.env/bin/python')
-    return router(sys.argv)
+        print('Info: Try switching to .env/bin/python')
+        util.python_switcher('.env/bin/python', __file__, sys.argv[1:])
+    else:
+        router(sys.argv)
+
+if __name__ == '__main__':
+    main()
