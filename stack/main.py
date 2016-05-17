@@ -7,6 +7,8 @@ import stack.config as config
 import stack.util as util
 import sysconfig
 import fabric.main as fabric_main
+import scaffold.main
+import pip
 
 
 config_file_exist = config.exist()
@@ -21,7 +23,7 @@ def ignore(fn: Callable, value):
 
 
 def new(args):
-    os.system('scaffold new %s %s' % (args.project, args.template))
+    return scaffold.main.main()
 
 
 def upgrade(args):
