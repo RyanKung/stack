@@ -5,10 +5,9 @@ from typing import Callable
 from stack.args import parser
 import stack.config as config
 import stack.util as util
+from stack.decorators import command
 import sysconfig
-import fabric.main as fabric_main
 import scaffold.main
-import pip
 
 
 config_file_exist = config.exist()
@@ -22,7 +21,14 @@ def ignore(fn: Callable, value):
         return None
 
 
+@command
 def new(args):
+    '''
+    Initalize a new project based on template
+    @params project, PROJECT, your project name
+    @params -t, --template, template, External template path
+    @params --rempte, PATH, External template path
+    '''
     return scaffold.main.main()
 
 
@@ -63,15 +69,19 @@ def install(args):
 
 
 def uninstall(args):
+    import pip
+    pip.commands.uninstall.uninstall
     return os.system('.env/bin/pip uninstall %s' % args.lib)
 
 
 def list_installed(args):
-    return os.system('.env/bin/pip freeze')
+    import pip
+    list(map(print, pip.commands.freeze.freeze()))
 
 
 def fabric(args):
-    return fabric_main.main([os.path.abspath(__file__)])
+    import fabric.main
+    return fabric.main.main([os.path.abspath(__file__)])
 
 
 def test(args):
