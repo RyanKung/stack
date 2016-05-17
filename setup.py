@@ -18,7 +18,7 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='python-stack',
-    version='0.1.1.6',
+    version='0.1.1.7',
     url='http://python-stack.readthedocs.io',
     description='`stack` is a Python version of [stack](http://docs.haskellstack.org/en/stable/README/),',
     author='Ryan Kung',

@@ -7,3 +7,4 @@ pycparser==2.14
 pycrypto==2.6.1
 six==1.10.0
 virtualenv==15.0.1
+distlib==0.2.3

@@ -4,6 +4,8 @@ import os
 from typing import Callable
 from stack.args import parser
 import stack.config as config
+import stack.util as util
+import sysconfig
 import fabric.main as fabric_main
 
 
@@ -31,17 +33,18 @@ def clear(args):
 
 
 def init(args):
-    os.system('stack_init')
+    python = args.python or 'python3'
+    config.write(dict(python=python))
+    config.write(dict(python_exec='.env/bin/python'))
+    os.system('virtualenv .env --python=%s' % python)
+    os.system('.env/bin/pip install sl_pip')
+    os.system('.env/bin/python -m pip install python-stack ipython coverage flake8 nose coverage')
 
 
 def setup(args):
-    python = args.python or 'python3'
-    os.system('virtualenv .env --python=%s' % python)
-    os.system('.env/bin/pip install sl_pip')
-    os.system('.env/bin/python -m pip install ipython coverage flake8 nose coverage')
     ignore(os.system, '.env/bin/pip install -r ./requirements.txt --process-dependency-links')
     projectname = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
-    config.write(dict(python=python, project=projectname))
+    config.write(dict(project=projectname))
 
 
 def install(args):
@@ -58,7 +61,7 @@ def install(args):
 
 
 def uninstall(args):
-    return os.system('.env/bin/python -m pip uninstall %s' % args.lib)
+    return os.system('.env/bin/pip uninstall %s' % args.lib)
 
 
 def list_installed(args):
@@ -126,4 +129,9 @@ def router(argv) -> Callable:
 
 
 def main():
+    if config.has_venv() and not util.is_venv():
+        print('Warning: Command running outside the venv, you may need to run `stack init` first')
+        print('Warning: Using lib path %s' % sysconfig.get_path('platlib'))
+        print('Info: Try switch ing to .env/bin/python')
+        util.python_switcher('.env/bin/python')
     return router(sys.argv)

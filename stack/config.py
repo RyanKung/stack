@@ -24,3 +24,7 @@ def write(data: dict) -> None:
         else:
             yaml_data = dict({'build': [str(time.time())]}, **data)
         f.write(yaml.dump(yaml_data))
+
+
+def has_venv():
+    return exist() and os.path.exists('.env')

@@ -15,8 +15,8 @@ new_project_parser.add_argument('-t', '--template', metavar='template', type=str
 new_project_parser.add_argument('--remote', metavar='PATH', type=str, help='External template path')
 
 # # stack init
-# init_project_parser = subparsers.add_parser('init', help='Initalize a new project envirement')
-# init_project_parser.add_argument('--python', metavar='PATH', type=str, help='Version of Python')
+init_project_parser = subparsers.add_parser('init', help='Initalize a new project envirement')
+init_project_parser.add_argument('--python', metavar='PATH', type=str, help='Version of Python')
 
 
 # stack install

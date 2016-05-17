@@ -1,3 +1,2 @@
-build: ['1462279966.422763']
-project: stack
-python: python3
+build: ['1463479529.514742']
+python_exec: .env/bin/python
