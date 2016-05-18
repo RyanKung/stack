@@ -1,5 +1,5 @@
 # coding utf8
-from functools import reduce
+from functools import reduce, wraps
 from operator import add
 from stack.args import subparsers as parser
 
@@ -11,7 +11,7 @@ def command_argument_paraser(fn, parser):
             return ''
         else:
             kvs = doc.strip().split(', ')
-            if kvs[0].startswith('@'):
+            if kvs[0].startswith(':'):
                 return (kvs[0][1:], kvs[1:])
             else:
                 return doc
@@ -32,4 +32,7 @@ def command_argument_paraser(fn, parser):
 
 def command(fn):
     command_argument_paraser(fn, parser)
-    return lambda *args, **kwargs: fn(*args, **kwargs)
+
+    @wraps(fn)
+    def handler(*args, **kwargs):
+        return fn(*args, **kwargs)

@@ -26,9 +26,9 @@ def ignore(fn: Callable, value):
 def new(args):
     '''
     Initalize a new project based on template
-    @params project, PROJECT, your project name
-    @params -t, --template, template, External template path
-    @params --rempte, PATH, External template path
+    :params project, PROJECT, your project name
+    :params -t, --template, template, External template path
+    :params --rempte, PATH, External template path
     '''
     return scaffold.main.main()
 
