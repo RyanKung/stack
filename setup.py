@@ -1,10 +1,13 @@
 # coding:utf8
 import sys
 from setuptools import setup, find_packages
+import os
 
-requirement_file = 'requirements.txt'
+current_path = os.path.dirname(os.path.abspath(__file__))
+
+requirement_file = os.path.join(current_path, 'requirements.txt')
 if sys.version_info[:2] < (3, 5) and sys.argv[-1] == 'install':
-    requirement_file = 'requirements2.txt'
+    requirement_file = os.path.join(current_path, 'requirements2.txt')
 
 if sys.version_info[:2] < (2, 7):
     sys.exit('stack requires python 2.7 or higher')
@@ -18,7 +21,7 @@ with open('README.rst', 'r') as f:
 
 setup(
     name='python-stack',
-    version='0.1.1.8b3',
+    version='0.1.1.9',
     url='http://python-stack.readthedocs.io',
     description='`stack` is a Python version of [stack](http://docs.haskellstack.org/en/stable/README/),',
     author='Ryan Kung',

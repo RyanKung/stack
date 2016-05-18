@@ -17,8 +17,8 @@ def load() -> dict:
 
 
 def write(data: dict) -> None:
+    origin = load()
     with open(path, 'w+') as f:
-        origin = yaml.load(''.join(f.readlines()))
         if origin:
             yaml_data = dict(origin, **data)
         else:

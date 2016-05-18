@@ -7,6 +7,7 @@ import stack.config as config
 import stack.util as util
 from stack.decorators import as_command
 import sysconfig
+import traceback
 
 config_file_exist = config.exist()
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -53,7 +54,7 @@ def clear(args):
 def init(args):
     '''
     Initalize a new project envirement
-    @argument --python, metavar=PATH, help=Version of Python
+    @argument --python, metavar=PATH, help=Version of Python, default=python3
     '''
     python = args.python or 'python3'
     config.write(dict(python=python))
@@ -62,6 +63,7 @@ def init(args):
     os.system('.env/bin/pip install sl_pip')
     os.system('.env/bin/pip install ipython coverage flake8 nose coverage')
     if python == 'python3':
+        util.info('Installing stack inside venv')
         os.system('.env/bin/pip install python_stack')
 
 
@@ -203,13 +205,17 @@ def router(argv) -> Callable:
 
 
 def main():
-    if config.has_venv() and not util.is_venv():
-        print('Warning: Command running outside the venv, you may need to run `stack init` first')
-        print('Warning: Using lib path %s' % sysconfig.get_path('platlib'))
-        print('Info: Try switching to .env/bin/python')
-        util.python_switcher('.env/bin/python', __file__, sys.argv[1:])
+    if len(sys.argv) > 1 and not util.is_venv() and not sys.argv[1] == 'init':
+        util.warn('Warning: Command running outside the venv, you may need to run `stack init` first')
+        util.warn('Warning: Using lib path %s' % sysconfig.get_path('platlib'))
+        if config.has_venv() and config.load().get('python', '') == 'python3':
+            util.info('Try switching to .env/bin/python')
+            os.system('.env/bin/stack %s' % ''.join(sys.argv[1:]))
     else:
-        router(sys.argv)
+        try:
+            router(sys.argv)
+        except Exception as ex:
+            util.error("Exception <%s>, Traceback: %r", str(ex), traceback.format_exc())
 
 if __name__ == '__main__':
     main()

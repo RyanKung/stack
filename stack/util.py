@@ -14,3 +14,15 @@ def python_switcher(python_exec: str, python_file: str, args: list):
         subprocess.call(['%s %s %s' % (python_exec, python_file, ' '.join(args))], shell=True)
     else:
         sys.exit(1)
+
+
+def warn(s: str):
+    print("\033[93m Warning: {}\033[00m" .format(s))
+
+
+def info(s: str):
+    print("\033[92m Info: {}\033[00m" .format(s))
+
+
+def error(s: str):
+    print("\033[91m Info: {}\033[00m" .format(s))
