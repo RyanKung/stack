@@ -8,6 +8,7 @@ import stack.util as util
 from stack.decorators import command
 import sysconfig
 import scaffold.main
+import pip
 
 
 config_file_exist = config.exist()
@@ -46,7 +47,9 @@ def init(args):
     config.write(dict(python_exec='.env/bin/python'))
     os.system('virtualenv .env --python=%s' % python)
     os.system('.env/bin/pip install sl_pip')
-    os.system('.env/bin/python -m pip install python-stack ipython coverage flake8 nose coverage')
+    os.system('.env/bin/pip install ipython coverage flake8 nose coverage')
+    if python == 'python3':
+        os.system('.env/bin/pip install python_stack')
 
 
 def setup(args):
@@ -69,13 +72,10 @@ def install(args):
 
 
 def uninstall(args):
-    import pip
-    pip.commands.uninstall.uninstall
     return os.system('.env/bin/pip uninstall %s' % args.lib)
 
 
 def list_installed(args):
-    import pip
     list(map(print, pip.commands.freeze.freeze()))
 
 
