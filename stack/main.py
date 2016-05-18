@@ -5,13 +5,12 @@ from typing import Callable
 from stack.args import parser
 import stack.config as config
 import stack.util as util
-from stack.decorators import command
+from stack.decorators import as_command
 import sysconfig
-import scaffold.main
 import pip
 
-
 config_file_exist = config.exist()
+current_path = os.path.dirname(os.path.abspath(__file__))
 
 
 def ignore(fn: Callable, value):
@@ -22,15 +21,17 @@ def ignore(fn: Callable, value):
         return None
 
 
-@command
+@as_command
 def new(args):
     '''
     Initalize a new project based on template
-    :params project, PROJECT, your project name
-    :params -t, --template, template, External template path
-    :params --rempte, PATH, External template path
+    @argument project, metavar=PROJECT, help=your project name
+    @argument -t, --template, metavar=template, help=External template path, default=default
     '''
-    return scaffold.main.main()
+    if args.template == 'default':
+        args.template = '%s/../templates/default' % current_path
+    import scaffold.main
+    return scaffold.main.main(args=args)
 
 
 def upgrade(args):

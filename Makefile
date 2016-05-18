@@ -1,5 +1,5 @@
 default: install
 upload:
-	python setup.py sdist --formats=gztar register upload
+	python3 setup.py sdist --formats=gztar register upload
 install:
-	.env/bin/python setup.py install
+	python3 setup.py install
