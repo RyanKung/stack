@@ -5,3 +5,5 @@ setup module
     :members:
     :undoc-members:
     :show-inheritance:
+
+pip install python_stack

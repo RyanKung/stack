@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import sys, os
 
-sys.path.insert(0, os.path.abspath('../../stack'))
 #
 # stack documentation build configuration file, created by
 # sphinx-quickstart on Fri May  6 11:04:41 2016.

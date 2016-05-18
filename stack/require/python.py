@@ -12,6 +12,8 @@ def install_python(version):
     tar -xvf Python-{version}.tar.xz
     cd Python-{version}
     ./configure&&make&&make install
+    cd ..
+    rm -r Python-{version}*
     '''.format(version=version)
     os.system(script)
 

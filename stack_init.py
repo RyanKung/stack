@@ -1,6 +1,6 @@
 # coding: utf8
 
-from require.python import install_python
+from stack.require.python import install_python
 import os
 
 

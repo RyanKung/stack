@@ -2,10 +2,6 @@ stack
 =====
 
 .. toctree::
-   :maxdepth: 10
+   :maxdepth: 4
 
-   scaffold
-   setup
    stack
-   stack_init
-   test
