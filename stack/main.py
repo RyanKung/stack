@@ -7,7 +7,6 @@ import stack.config as config
 import stack.util as util
 from stack.decorators import as_command
 import sysconfig
-import pip
 
 config_file_exist = config.exist()
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -34,15 +33,28 @@ def new(args):
     return scaffold.main.main(args=args)
 
 
+@as_command
 def upgrade(args):
+    '''
+    Upgrade Stack
+    '''
     os.system('pip uninstall stack && pip install stack')
 
 
+@as_command
 def clear(args):
+    '''
+    Remove virtualenv
+    '''
     ignore(os.system, 'rm -rf .env')
 
 
+@as_command
 def init(args):
+    '''
+    Initalize a new project envirement
+    @argument --python, metavar=PATH, help=Version of Python
+    '''
     python = args.python or 'python3'
     config.write(dict(python=python))
     config.write(dict(python_exec='.env/bin/python'))
@@ -53,13 +65,24 @@ def init(args):
         os.system('.env/bin/pip install python_stack')
 
 
+@as_command
 def setup(args):
+    '''
+    Install libs from requirements.txt to venv
+    '''
     ignore(os.system, '.env/bin/pip install -r ./requirements.txt --process-dependency-links')
     projectname = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
     config.write(dict(project=projectname))
 
 
+@as_command
 def install(args):
+    '''
+    Install libs from pypi or git repos
+    @argument lib, metavar=LIB, help=Lib name
+    @argument --repo, metavar=repo, help=Install via a git repo
+    @argument --git, metavar=git, help=Decare is a git repo, default=
+    '''
     if not args.lib:
         ignore(os.system, '.env/bin/pip install -r ./requirements.txt --process-dependency-links')
     git = bool(args.repo)
@@ -72,41 +95,79 @@ def install(args):
     os.system('.env/bin/pip freeze > requirements.txt')
 
 
+@as_command
 def uninstall(args):
+    '''
+    Uninstall libs
+    @argument lib, metavar=LIB, help=Lib name
+    '''
     return os.system('.env/bin/pip uninstall %s' % args.lib)
 
 
-def list_installed(args):
+@as_command
+def installed(args):
+    '''
+    List installed libs
+    '''
+    import pip
     list(map(print, pip.commands.freeze.freeze()))
 
 
+@as_command
 def fabric(args):
+    '''
+    drop to Fabric
+    '''
     import fabric.main
     return fabric.main.main([os.path.abspath(__file__)])
 
 
+@as_command
 def test(args):
+    '''
+    run unittest
+    '''
     return os.system('.env/bin/nosetests -sv')
 
 
+@as_command
 def coverage(args):
+    '''
+    Report unittest coverage
+    '''
     project = config.load().get('project')
     return os.system('.env/bin/nosetests -sv --with-coverage --cover-package %s' % project)
 
 
+@as_command
 def python(args):
+    '''
+    run python
+    '''
     return os.system('.env/bin/python %s' % ' '.join(sys.argv[2:]))
 
 
+@as_command
 def repl(args):
+    '''
+    call ipython as repl
+    '''
     return os.system('.env/bin/ipython')
 
 
-def pip_exec(args):
+@as_command
+def pip(args):
+    '''
+    call pip
+    '''
     return os.system('.env/bin/pip %s' % ' '.join(sys.argv[2:]))
 
 
-def gen_document(args):
+@as_command
+def doc(args):
+    '''
+    audto gen document
+    '''
     return os.system('sphinx-apidoc ./ -o ./docs -F')
 
 
@@ -126,18 +187,18 @@ def router(argv) -> Callable:
         'new': new,
         'repl': repl,
         'test': test,
-        'pip': pip_exec,
+        'pip': pip,
         'setup': setup,
         'python': python,
         'init': init,
         'clear': clear,
-        'list': list_installed,
+        'installed': installed,
         'uninstall': uninstall,
         'install': install,
         'pass': uninstall,
         'serve': git_serve,
         'coverage': coverage,
-        'doc': gen_document
+        'doc': doc
     }.get(argv[1], fabric)(args)
 
 
