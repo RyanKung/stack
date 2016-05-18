@@ -15,13 +15,13 @@ if sys.version_info[:2] < (2, 7):
 with open(requirement_file, 'r') as f:
     requires = [x.strip() for x in f if x.strip()]
 
-with open('README.rst', 'r') as f:
+with open(os.path.join(current_path, 'README.rst'), 'r') as f:
     readme = f.read()
 
 
 setup(
     name='python-stack',
-    version='0.1.1.9',
+    version='0.1.2.0',
     url='http://python-stack.readthedocs.io',
     description='`stack` is a Python version of [stack](http://docs.haskellstack.org/en/stable/README/),',
     author='Ryan Kung',

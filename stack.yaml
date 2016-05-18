@@ -1,2 +1,3 @@
 build: ['1463595938.769874']
+python: python3
 python_exec: .env/bin/python
