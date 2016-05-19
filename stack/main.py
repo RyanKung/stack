@@ -120,12 +120,11 @@ def installed(args):
 
 
 @as_command
-def fabric(args):
+def fab(args):
     '''
     drop to Fabric
     '''
-    import fabric.main
-    return fabric.main.main([os.path.abspath(__file__)])
+    os.system(prefix + 'fab %s' % ' '.join(sys.argv[2:]))
 
 
 @as_command
@@ -185,7 +184,12 @@ def doc(args):
     return os.system('sphinx-apidoc ./ -o ./docs -F')
 
 
-def git_serve(args):
+@as_command
+def serve(args):
+    '''
+    @argument --ip, help=IP addr
+    @argument --port, help=Port
+    '''
     port = args.port or '30976'
     ip = args.ip or '0.0.0.0'
     print('git daemon will listen on %s:%s/.git' % (ip, port))
@@ -211,10 +215,11 @@ def router(argv) -> Callable:
         'uninstall': uninstall,
         'install': install,
         'pass': uninstall,
-        'serve': git_serve,
+        'serve': serve,
         'coverage': coverage,
-        'doc': doc
-    }.get(argv[1], fabric)(args)
+        'doc': doc,
+        'fab': fab
+    }.get(argv[1], fab)(args)
 
 
 def main():
@@ -224,7 +229,7 @@ def main():
     try:
         router(sys.argv)
     except Exception as ex:
-        util.error("Exception <%s>, Traceback: %r", str(ex), traceback.format_exc())
+        util.error("Exception <%s>, Traceback: %r" % (str(ex), traceback.format_exc()))
 
 if __name__ == '__main__':
     main()

@@ -25,4 +25,4 @@ def info(s: str):
 
 
 def error(s: str):
-    print("\033[91m Info: {}\033[00m" .format(s))
+    print("\033[91m Error: {}\033[00m" .format(s))
