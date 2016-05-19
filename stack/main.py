@@ -8,6 +8,8 @@ import stack.util as util
 from stack.decorators import as_command
 import sysconfig
 import traceback
+import runpy
+from fabric.api import local
 
 config_file_exist = config.exist()
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -90,7 +92,6 @@ def install(args):
     Install libs from pypi or git repos
     @argument lib, metavar=LIB, help=Lib name
     @argument --repo, metavar=repo, help=Install via a git repo
-    @argument --git, metavar=git, help=Decare is a git repo, default=
     '''
     if not args.lib:
         ignore(os.system, prefix + 'pip install -r ./requirements.txt --process-dependency-links')
@@ -98,9 +99,9 @@ def install(args):
     if not git:
         os.system(prefix + 'pip install %s -v --process-dependency-links' % args.lib)
     if git:
-        template = config.load().get('git_path', 'git+{repo}#egg={lib}')
+        template = 'git+{repo}#egg={lib}'
         repo = template.format(**dict(repo=args.repo, lib=args.lib))
-        os.system(prefix + 'pip install -e %s --process-dependency-links' % repo)
+        local(prefix + 'pip install -e %s --process-dependency-links' % repo)
     os.system(prefix + 'pip freeze > requirements.txt')
 
 
@@ -146,7 +147,7 @@ def coverage(args):
     '''
     Report unittest coverage
     '''
-    project = config.load().get('project')
+    project = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
     return os.system(prefix + 'nosetests -sv --with-coverage --cover-package %s' % project)
 
 
@@ -213,12 +214,17 @@ def pep8_hook(args):
     os.system('flake8 --install-hook')
 
 
-def router(argv) -> Callable:
+def router(pattern: dict, argv) -> Callable:
     args, unknown = parser.parse_known_args()
     if not len(argv) > 1:
         print(parser.format_help())
         return
-    return {
+    return pattern.get(argv[1], fab)(args)
+
+
+def main():
+
+    pattern = {
         'new': new,
         'repl': repl,
         'test': test,
@@ -238,16 +244,18 @@ def router(argv) -> Callable:
         'pep8_hook': pep8_hook,
         'fab': fab,
         'set_python': set_python
-    }.get(argv[1], fab)(args)
+    }
+    if os.path.exists('./stackfile.py'):
+        util.info('loading staticfile.py')
+        tasks = runpy.run_path('stackfile.py')
+        pattern.update(tasks)
 
-
-def main():
-    util.info('Using %spython' % prefix or 'System Default ')
-    if len(sys.argv) > 1 and not config.has_venv() and not sys.argv[1] == 'init':
+    util.info('Using %spython' % (prefix or 'System Default '))
+    if len(sys.argv) > 1 and not config.has_venv() and not sys.argv[1] == 'init' and util.is_venv():
         util.warn('Command running outside the venv, you may need to run `stack init` first')
         util.warn('Using lib path %s' % sysconfig.get_path('platlib'))
     try:
-        router(sys.argv)
+        router(pattern, sys.argv)
     except Exception as ex:
         util.error("Exception <%s>, Traceback: %r" % (str(ex), traceback.format_exc()))
 
