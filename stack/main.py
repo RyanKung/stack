@@ -52,7 +52,7 @@ def clear(args):
 
 
 @as_command
-def set(args):
+def set_python(args):
     '''
     Set python version
     @argument --python, metavar=version, help=Version of Python
@@ -205,6 +205,14 @@ def serve(args):
     return os.system('git daemon --reuseaddr --base-path=. --export-all --verbose --enable=receive-pack --port=%s --listen=%s' % (port, ip))
 
 
+@as_command
+def pep8_hook(args):
+    '''
+    Add a pre commit hook to your .git repo
+    '''
+    os.system('flake8 --install-hook')
+
+
 def router(argv) -> Callable:
     args, unknown = parser.parse_known_args()
     if not len(argv) > 1:
@@ -227,7 +235,9 @@ def router(argv) -> Callable:
         'serve': serve,
         'coverage': coverage,
         'doc': doc,
-        'fab': fab
+        'pep8_hook': pep8_hook,
+        'fab': fab,
+        'set_python': set_python
     }.get(argv[1], fab)(args)
 
 
