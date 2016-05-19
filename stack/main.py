@@ -11,7 +11,7 @@ import traceback
 
 config_file_exist = config.exist()
 current_path = os.path.dirname(os.path.abspath(__file__))
-prefix = '.env/bin/' if util.is_venv() or config.has_venv() else ''
+prefix = '.env/bin/' if (not util.is_venv()) and config.has_venv() else ''
 
 
 def ignore(fn: Callable, value):
@@ -52,6 +52,15 @@ def clear(args):
 
 
 @as_command
+def set(args):
+    '''
+    Set python version
+    @argument --python, metavar=version, help=Version of Python
+    '''
+    config.write(dict(python=python))
+
+
+@as_command
 def init(args):
     '''
     Initalize a new project envirement
@@ -63,9 +72,6 @@ def init(args):
     os.system('virtualenv .env --python=%s' % python)
     os.system(prefix + 'pip install sl_pip')
     os.system(prefix + 'pip install ipython coverage flake8 nose coverage')
-    if python == 'python3':
-        util.info('Installing stack inside venv')
-        os.system(prefix + 'pip install python_stack --upgrade')
 
 
 @as_command
@@ -149,7 +155,8 @@ def run(args):
     '''
     exec file
     '''
-    return os.system(prefix + 'python %s' % ' '.join(sys.argv[2:]))
+    python = config.load().get('python', 'python')
+    return os.system(prefix + '%s %s' % (python, ' '.join(sys.argv[2:])))
 
 
 @as_command
@@ -157,7 +164,8 @@ def python(args):
     '''
     run python
     '''
-    return os.system(prefix + 'python %s' % ' '.join(sys.argv[2:]))
+    python = config.load().get('python', 'python')
+    return os.system(prefix + '%s %s' % (python, ' '.join(sys.argv[2:])))
 
 
 @as_command
@@ -187,6 +195,7 @@ def doc(args):
 @as_command
 def serve(args):
     '''
+    Serve current dir as as git daemon
     @argument --ip, help=IP addr
     @argument --port, help=Port
     '''
@@ -223,9 +232,10 @@ def router(argv) -> Callable:
 
 
 def main():
+    util.info('Using %spython' % prefix or 'System Default ')
     if len(sys.argv) > 1 and not config.has_venv() and not sys.argv[1] == 'init':
-        util.warn('Warning: Command running outside the venv, you may need to run `stack init` first')
-        util.warn('Warning: Using lib path %s' % sysconfig.get_path('platlib'))
+        util.warn('Command running outside the venv, you may need to run `stack init` first')
+        util.warn('Using lib path %s' % sysconfig.get_path('platlib'))
     try:
         router(sys.argv)
     except Exception as ex:
