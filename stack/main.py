@@ -8,12 +8,17 @@ import stack.util as util
 from stack.decorators import as_command
 import sysconfig
 import traceback
-import runpy
 from fabric.api import local
+
+
+__all__ = ['new', 'upgrade', 'clear', 'set_python', 'init',
+           'setup', 'install', 'uninstall', 'fab', 'test',
+           'coverage', 'run', 'python', 'repl', 'pip', 'doc',
+           'serve', 'pep8_hook']
 
 config_file_exist = config.exist()
 current_path = os.path.dirname(os.path.abspath(__file__))
-prefix = '.env/bin/' if (not util.is_venv()) and config.has_venv() else ''
+prefix = config.get_prefix()
 
 
 def ignore(fn: Callable, value):
@@ -25,7 +30,7 @@ def ignore(fn: Callable, value):
 
 
 @as_command
-def new(args):
+def new(args) -> None:
     '''
     Initalize a new project based on template
     @argument project, metavar=PROJECT, help=your project name
@@ -38,7 +43,7 @@ def new(args):
 
 
 @as_command
-def upgrade(args):
+def upgrade(args) -> None:
     '''
     Upgrade Stack
     '''
@@ -46,7 +51,7 @@ def upgrade(args):
 
 
 @as_command
-def clear(args):
+def clear(args) -> None:
     '''
     Remove virtualenv
     '''
@@ -54,7 +59,7 @@ def clear(args):
 
 
 @as_command
-def set_python(args):
+def set_python(args) -> None:
     '''
     Set python version
     @argument --python, metavar=version, help=Version of Python
@@ -63,7 +68,7 @@ def set_python(args):
 
 
 @as_command
-def init(args):
+def init(args) -> None:
     '''
     Initalize a new project envirement
     @argument --python, metavar=PATH, help=Version of Python, default=python3
@@ -77,7 +82,7 @@ def init(args):
 
 
 @as_command
-def setup(args):
+def setup(args) -> None:
     '''
     Install libs from requirements.txt to venv
     '''
@@ -87,7 +92,7 @@ def setup(args):
 
 
 @as_command
-def install(args):
+def install(args) -> None:
     '''
     Install libs from pypi or git repos
     @argument lib, metavar=LIB, help=Lib name
@@ -106,7 +111,7 @@ def install(args):
 
 
 @as_command
-def uninstall(args):
+def uninstall(args) -> None:
     '''
     Uninstall libs
     @argument lib, metavar=LIB, help=Lib name
@@ -115,7 +120,7 @@ def uninstall(args):
 
 
 @as_command
-def installed(args):
+def installed(args) -> None:
     '''
     List installed libs
     '''
@@ -127,7 +132,7 @@ def installed(args):
 
 
 @as_command
-def fab(args):
+def fab(args) -> None:
     '''
     drop to Fabric
     '''
@@ -135,7 +140,7 @@ def fab(args):
 
 
 @as_command
-def test(args):
+def test(args) -> None:
     '''
     run unittest
     '''
@@ -143,7 +148,7 @@ def test(args):
 
 
 @as_command
-def coverage(args):
+def coverage(args) -> None:
     '''
     Report unittest coverage
     '''
@@ -152,16 +157,20 @@ def coverage(args):
 
 
 @as_command
-def run(args):
+def run(args) -> None:
     '''
-    exec file
+    Exec file locally or remote
+    @argument --remote, help=run as remote file
     '''
-    python = config.load().get('python', 'python')
-    return os.system(prefix + '%s %s' % (python, ' '.join(sys.argv[2:])))
+    if args.remote:
+        python = config.load().get('python', 'python')
+        return os.system(prefix + '%s %s' % (python, ' '.join(sys.argv[2:])))
+    else:
+        return os.system('require run %s' % args.remote)
 
 
 @as_command
-def python(args):
+def python(args) -> None:
     '''
     run python
     '''
@@ -170,7 +179,7 @@ def python(args):
 
 
 @as_command
-def repl(args):
+def repl(args) -> None:
     '''
     call ipython as repl
     '''
@@ -178,7 +187,7 @@ def repl(args):
 
 
 @as_command
-def pip(args):
+def pip(args) -> None:
     '''
     call pip
     '''
@@ -186,15 +195,15 @@ def pip(args):
 
 
 @as_command
-def doc(args):
+def doc(args) -> None:
     '''
     audto gen document
     '''
-    return os.system('sphinx-apidoc ./ -o ./docs -F')
+    return os.system('sphinx-apidoc ./ -o ./docs -f -M -F')
 
 
 @as_command
-def serve(args):
+def serve(args) -> None:
     '''
     Serve current dir as as git daemon
     @argument --ip, help=IP addr
@@ -207,7 +216,7 @@ def serve(args):
 
 
 @as_command
-def pep8_hook(args):
+def pep8_hook(args) -> None:
     '''
     Add a pre commit hook to your .git repo
     '''
@@ -223,34 +232,9 @@ def router(pattern: dict, argv) -> Callable:
 
 
 def main():
-
-    pattern = {
-        'new': new,
-        'repl': repl,
-        'test': test,
-        'pip': pip,
-        'setup': setup,
-        'python': python,
-        'init': init,
-        'run': run,
-        'clear': clear,
-        'installed': installed,
-        'uninstall': uninstall,
-        'install': install,
-        'pass': uninstall,
-        'serve': serve,
-        'coverage': coverage,
-        'doc': doc,
-        'pep8_hook': pep8_hook,
-        'fab': fab,
-        'set_python': set_python
-    }
-    if os.path.exists('./stackfile.py'):
-        util.info('loading staticfile.py')
-        tasks = runpy.run_path('stackfile.py')
-        pattern.update(tasks)
-
-    util.info('Using %spython' % (prefix or 'System Default '))
+    pattern = {k: v for k, v in globals().items() if k in __all__}
+    util.check_and_update_via_stackfile(pattern)
+    util.info('Using %spython' % (prefix or (util.is_venv and 'Venv') or 'System Default '))
     if len(sys.argv) > 1 and not config.has_venv() and not sys.argv[1] == 'init' and util.is_venv():
         util.warn('Command running outside the venv, you may need to run `stack init` first')
         util.warn('Using lib path %s' % sysconfig.get_path('platlib'))
@@ -260,4 +244,6 @@ def main():
         util.error("Exception <%s>, Traceback: %r" % (str(ex), traceback.format_exc()))
 
 if __name__ == '__main__':
+    if sys.version_info[:2] < (3, 5) and sys.argv[-1] == 'install':
+        sys.exit('stack requires python 3.5 or higher')
     main()

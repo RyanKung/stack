@@ -3,6 +3,7 @@
 import yaml
 import time
 import os
+import stack.util as util
 
 path = 'stack.yaml'
 
@@ -28,3 +29,10 @@ def write(data: dict) -> None:
 
 def has_venv():
     return exist() and os.path.exists('.env')
+
+
+def get_prefix() -> str:
+    '''
+    Find out wich python should be call
+    '''
+    return '.env/bin/' if all((not util.is_venv(), has_venv())) else ''
