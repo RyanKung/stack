@@ -1,3 +1,4 @@
+aiohttp==0.21.5 
 PyYAML==3.11
 ecdsa==0.13
 Fabric3==1.10.2.post3
