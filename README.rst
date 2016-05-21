@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to stack's documentation!
+Python Tool Stack
 =================================
 
 `stack` is a Python version of `stack` (http://docs.haskellstack.org/en/stable/README/), which is a cross-platform programm for developing `Python` projects. It is aimed at `Pythoners` both new and experienced.
@@ -100,22 +100,3 @@ Quick Start:
       git add remote production git://<your remote ip>:30976/.git
       git checkout release/<your release branch>
       git push production HEAD
-
-
-Modules
-
-.. toctree::
-   :maxdepth: 5
-
-   modules
-
-
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
-
