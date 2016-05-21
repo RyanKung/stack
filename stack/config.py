@@ -4,6 +4,7 @@ import yaml
 import time
 import os
 import stack.util as util
+from .decorators import ignore
 
 path = 'stack.yaml'
 
@@ -12,6 +13,7 @@ def exist() -> bool:
     return os.path.exists(path)
 
 
+@ignore
 def load() -> dict:
     with open(path, 'r+') as f:
         return yaml.load(''.join(f.readlines()))
@@ -35,4 +37,8 @@ def get_prefix() -> str:
     '''
     Find out wich python should be call
     '''
-    return '.env/bin/' if all((not util.is_venv(), has_venv())) else ''
+    if util.is_venv():
+        return os.environ['VIRTUAL_ENV'] + '/bin/'
+    if has_venv():
+        return '.env/bin/'
+    return ''

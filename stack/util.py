@@ -12,7 +12,7 @@ def is_venv():
     '''
     Check the venv with sl_pip
     '''
-    return util.in_venv()
+    return util.in_venv() or os.environ.get('VIRTUAL_ENV', None)
 
 
 def python_switcher(python_exec: str, python_file: str, args: list):

@@ -85,10 +85,13 @@ def init(args) -> None:
 def setup(args) -> None:
     '''
     Install libs from requirements.txt to venv
+    @argument -r, --requirefile, default='requirement.txt', help=sepec requirement file
     '''
+    dependence = map(lambda x: x.split('==')[0], tuple(open('requirements.txt')))
     ignore(os.system, prefix + 'pip install -r ./requirements.txt --process-dependency-links')
     projectname = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
     config.write(dict(project=projectname))
+    config.write(dict(dependence=dependence))
 
 
 @as_command
@@ -234,14 +237,18 @@ def router(pattern: dict, argv) -> Callable:
 def main():
     pattern = {k: v for k, v in globals().items() if k in __all__}
     util.check_and_update_via_stackfile(pattern)
-    util.info('Using %spython' % (prefix or (util.is_venv and 'Venv') or 'System Default '))
-    if len(sys.argv) > 1 and not config.has_venv() and not sys.argv[1] == 'init' and util.is_venv():
-        util.warn('Command running outside the venv, you may need to run `stack init` first')
+    util.info('Using %spython' % (prefix or (util.is_venv() and 'Venv') or 'System Default '))
+    if len(sys.argv) > 1 and not config.has_venv() and not sys.argv[1] == 'init' and not util.is_venv():
+        util.warn('Command running outside the venv, you may need to run `stack init` first, or activite your `venv`')
         util.warn('Using lib path %s' % sysconfig.get_path('platlib'))
+        util.info('Continue? (Y/n)')
+        if input().upper() == 'N':
+            sys.exit()
     try:
         router(pattern, sys.argv)
     except Exception as ex:
-        util.error("Exception <%s>, Traceback: %r" % (str(ex), traceback.format_exc()))
+        util.error("Exception <%s>, Traceback:")
+        map(util.error, (str(ex), traceback.format_exc()))
 
 if __name__ == '__main__':
     if sys.version_info[:2] < (3, 5) and sys.argv[-1] == 'install':

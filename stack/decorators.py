@@ -39,3 +39,12 @@ def as_command(fn):
         return fn(*args, **kwargs)
 
     return handler
+
+
+def ignore(fn):
+    @wraps(fn)
+    def hander(*args, **kwargs):
+        try:
+            fn(*args, **kwargs)
+        except:
+            None
