@@ -5,6 +5,7 @@ import time
 import os
 import stack.util as util
 from .decorators import ignore
+from functools import partial
 
 path = 'stack.yaml'
 
@@ -13,7 +14,7 @@ def exist() -> bool:
     return os.path.exists(path)
 
 
-@ignore
+@partial(ignore, res={})
 def load() -> dict:
     with open(path, 'r+') as f:
         return yaml.load(''.join(f.readlines()))

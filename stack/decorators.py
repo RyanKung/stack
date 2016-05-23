@@ -23,7 +23,7 @@ def command_argument_paraser(fn: Callable, parser) -> list:
         parser.add_argument(*argc, **kwargs, type=str)
         return parser
 
-    docs = map(doc_parser, filter(bool, fn.__doc__.split('\n')))
+    docs = list(map(doc_parser, filter(bool, fn.__doc__.split('\n'))))
     name = fn.__name__
     params = filter(lambda x: isinstance(x, list), docs)
     helps = filter(lambda x: isinstance(x, str), docs)
@@ -41,10 +41,11 @@ def as_command(fn):
     return handler
 
 
-def ignore(fn):
+def ignore(fn, res=None):
     @wraps(fn)
-    def hander(*args, **kwargs):
+    def handler(*args, **kwargs):
         try:
-            fn(*args, **kwargs)
+            return fn(*args, **kwargs)
         except:
-            None
+            return res
+    return handler

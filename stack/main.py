@@ -163,13 +163,13 @@ def coverage(args) -> None:
 def run(args) -> None:
     '''
     Exec file locally or remote
-    @argument --remote, help=run as remote file
+    @argument --remote, metavar=remote, help=run as remote file
     '''
     if args.remote:
+        return os.system('require run %s' % args.remote)
+    else:
         python = config.load().get('python', 'python')
         return os.system(prefix + '%s %s' % (python, ' '.join(sys.argv[2:])))
-    else:
-        return os.system('require run %s' % args.remote)
 
 
 @as_command
@@ -247,8 +247,8 @@ def main():
     try:
         router(pattern, sys.argv)
     except Exception as ex:
-        util.error("Exception <%s>, Traceback:")
-        map(util.error, (str(ex), traceback.format_exc()))
+        util.error("Exception <%s>, Traceback:" % str(ex))
+        util.error(traceback.format_exc())
 
 if __name__ == '__main__':
     if sys.version_info[:2] < (3, 5) and sys.argv[-1] == 'install':
