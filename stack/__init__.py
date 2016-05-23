@@ -1,16 +1,19 @@
+"""
+Python Tool Stack
+=================================
 
-'''
+`stack` is a Python version of `stack` (http://docs.haskellstack.org/en/stable/README/),
+which is a cross-platform program for developing `Python` projects. It is aimed at `Pythonistas` both new and experienced.
 
-`stack` is a Python version of `stack`(http://docs.haskellstack.org/en/stable/README/),
-which is a cross-platform programm for developing `Python` projects. It is aimed at `Pythoners` both new and experienced.
+Go Star `Stack on GitHub` (http://github.com/ryankung/stack)
 
 It features:
 
-* Install Python in current envirement automatically, in an isolated location
+* Install Python in current environment automatically, in an isolated location
 * Installing packages needed for your project.
-* Exec your project
-* Check test Coverage your project
-* Code quality controll
+* Run your project
+* Check test coverage of your project
+* Code quality control
 * End to End git based release
 
 
@@ -18,13 +21,13 @@ Include:
 
 * stack / pystack
 
-* scaffold  -- An Python template generator
+* scaffold  -- A Python template generator
 
-* sphinx -- needed by `stack doc`
+* require  -- An async remote module loader
 
 Dependence:
 
-* Python3.5 or Above (may require libffi-devel on `centos`)
+* Python3.5 or above (may require libffi-devel on `centos`, or libffi-dev for `debian`)
 
 * git-daemon (https://git-scm.com/book/en/Git-on-the-Server-Git-Daemon)
 Quick Start:
@@ -50,28 +53,39 @@ Quick Start:
 
     stack coverage
 
-* Run Executable file in Env::
     stack python
     stack pip
-    stack nosetests
+    stack test
     stack repl
-* Extentable::
-    Stack support you extent the envirement with fabfile
+
+* Run a remote file::
+
+    stack run --run <some *.py remote>
+* Extensible::
+    Stack supports extending the environment with a stackfile like this:
+
+    from stack.decorators import as_command
+
+    @as_command
+    def do(args):
+        '''
+        sth
+        @argument --sth, help=dowhat
+        '''
+        print('do %s' % args.sth)
 
 * Document generator::
 
     stack doc
 
-* P2P git baseed depolyment:
+* P2P git baseed deployment:
 
   on remote production server::
 
       stack serve
 
-  on local dev envirement::
-      git add remote production <your remote ip>:30976/.git
+  on local dev environment::
+      git add remote production git://<your remote ip>:30976/.git
       git checkout release/<your release branch>
       git push production HEAD
-
-
-'''
+"""
