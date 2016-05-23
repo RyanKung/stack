@@ -137,7 +137,7 @@ def installed(args) -> None:
 @as_command
 def fab(args) -> None:
     '''
-    drop to Fabric
+    Drop to Fabric
     '''
     os.system(prefix + 'fab %s' % ' '.join(sys.argv[2:]))
 
@@ -145,7 +145,7 @@ def fab(args) -> None:
 @as_command
 def test(args) -> None:
     '''
-    run unittest
+    Run unittest with nosetests
     '''
     return os.system(prefix + 'nosetests -sv')
 
@@ -175,7 +175,7 @@ def run(args) -> None:
 @as_command
 def python(args) -> None:
     '''
-    run python
+    Run python
     '''
     python = config.load().get('python', 'python')
     return os.system(prefix + '%s %s' % (python, ' '.join(sys.argv[2:])))
@@ -184,15 +184,15 @@ def python(args) -> None:
 @as_command
 def repl(args) -> None:
     '''
-    call ipython as repl
+    Call ipython as repl
     '''
-    return os.system(prefix + 'ipython')
+    return os.system(prefix + 'ipython' % ' '.join(sys.argv[2:]))
 
 
 @as_command
 def pip(args) -> None:
     '''
-    call pip
+    Call pip
     '''
     return os.system(prefix + 'pip %s' % ' '.join(sys.argv[2:]))
 
@@ -200,7 +200,7 @@ def pip(args) -> None:
 @as_command
 def doc(args) -> None:
     '''
-    audto gen document
+    Auto gen document
     '''
     return os.system('sphinx-apidoc ./ -o ./docs -f -M -F')
 
