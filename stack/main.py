@@ -13,7 +13,7 @@ from fabric.api import local
 
 __all__ = ['new', 'upgrade', 'clear', 'set_python', 'init',
            'setup', 'install', 'uninstall', 'fab', 'test',
-           'coverage', 'run', 'python', 'repl', 'pip', 'doc',
+           'coverage', 'run', 'python', 'repl', 'doc',
            'serve', 'pep8_hook']
 
 config_file_exist = config.exist()
@@ -72,13 +72,15 @@ def init(args) -> None:
     '''
     Initalize a new project envirement
     @argument --python, metavar=PATH, help=Version of Python, default=python3
+    @argument --install_all, metavar=all, help=Install all required lib
     '''
     python = args.python or 'python3'
     config.write(dict(python=python))
     config.write(dict(python_exec=prefix + 'python'))
     os.system('virtualenv .env --python=%s' % python)
     os.system(prefix + 'pip install sl_pip')
-    os.system(prefix + 'pip install ipython coverage flake8 nose coverage')
+    if args.install_all:
+        os.system(prefix + 'pip install ipython coverage flake8 nose coverage')
 
 
 @as_command
@@ -119,6 +121,7 @@ def uninstall(args) -> None:
     Uninstall libs
     @argument lib, metavar=LIB, help=Lib name
     '''
+    util.check_exec('pip')
     return os.system(prefix + 'pip uninstall %s' % args.lib)
 
 
@@ -131,6 +134,7 @@ def installed(args) -> None:
         import pip
         list(map(print, pip.commands.freeze.freeze()))
     else:
+        util.check_exec('pip')
         os.system(prefix + 'pip freeze')
 
 
@@ -139,6 +143,7 @@ def fab(args) -> None:
     '''
     Drop to Fabric
     '''
+    util.check_exec('fabric')
     os.system(prefix + 'fab %s' % ' '.join(sys.argv[2:]))
 
 
@@ -155,6 +160,7 @@ def coverage(args) -> None:
     '''
     Report unittest coverage
     '''
+    util.check_exec('nosetests')
     project = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
     return os.system(prefix + 'nosetests -sv --with-coverage --cover-package %s' % project)
 
@@ -186,15 +192,8 @@ def repl(args) -> None:
     '''
     Call ipython as repl
     '''
+    util.check_exec('ipython')
     return os.system(prefix + 'ipython' % ' '.join(sys.argv[2:]))
-
-
-@as_command
-def pip(args) -> None:
-    '''
-    Call pip
-    '''
-    return os.system(prefix + 'pip %s' % ' '.join(sys.argv[2:]))
 
 
 @as_command
@@ -202,6 +201,7 @@ def doc(args) -> None:
     '''
     Auto gen document
     '''
+    util.check_exec('sphinx')
     return os.system('sphinx-apidoc ./ -o ./docs -f -M -F')
 
 
@@ -237,6 +237,7 @@ def router(pattern: dict, argv) -> Callable:
 def main():
     pattern = {k: v for k, v in globals().items() if k in __all__}
     util.check_and_update_via_stackfile(pattern)
+    util.check_and_update_via_execsfile(pattern, prefix)
     util.info('Using %spython' % (prefix or (util.is_venv() and 'Venv') or 'System Default '))
     if len(sys.argv) > 1 and not config.has_venv() and not sys.argv[1] == 'init' and not util.is_venv():
         util.warn('Command running outside the venv, you may need to run `stack init` first, or activite your `venv`')

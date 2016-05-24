@@ -1,11 +1,13 @@
 # coding: utf-8
 import pip._vendor.distlib.util as util
 import subprocess
+from functools import partial
 import os
 import sys
 import runpy
+import sysconfig
 
-__all__ = ['is_venv', 'python_switcher', 'warn', 'info', 'error', 'check_and_update_via_stackfile']
+__all__ = ['is_venv', 'python_switcher', 'warn', 'info', 'error', 'check_and_update_via_stackfile', 'get_execs']
 
 
 def is_venv():
@@ -55,3 +57,21 @@ def check_and_update_via_stackfile(pattern):
         info('loading staticfile.py')
         tasks = runpy.run_path('stackfile.py')
         pattern.update(tasks)
+
+
+def get_execs() -> list:
+    return filter(lambda x: '-' not in x, os.listdir(sysconfig.get_path('scripts')))
+
+
+def check_and_update_via_execsfile(pattern, prefix=''):
+    def gen_command(e, args):
+        return os.system(prefix + e + ' %s' % ' '.join(sys.argv[2:]))
+
+    exec_fns = {e: partial(gen_command, e) for e in get_execs()}
+    pattern.update(exec_fns)
+
+
+def check_exec(e: str) -> None:
+    if e not in get_execs():
+        error('You should run `stack install %s` first' % e)
+        sys.exit(1)
