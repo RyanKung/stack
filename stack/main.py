@@ -8,13 +8,12 @@ import stack.util as util
 from stack.decorators import as_command
 import sysconfig
 import traceback
-from fabric.api import local
 
 
 __all__ = ['new', 'upgrade', 'clear', 'set_python', 'init',
            'setup', 'install', 'uninstall', 'fab', 'test',
            'coverage', 'run', 'python', 'repl', 'doc',
-           'serve', 'pep8_hook']
+           'serve', 'pep8_hook', 'pip']
 
 config_file_exist = config.exist()
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -78,7 +77,6 @@ def init(args) -> None:
     config.write(dict(python=python))
     config.write(dict(python_exec=prefix + 'python'))
     os.system('virtualenv .env --python=%s' % python)
-    os.system(prefix + 'pip install sl_pip')
     if args.install_all:
         os.system(prefix + 'pip install ipython coverage flake8 nose coverage')
 
@@ -111,7 +109,7 @@ def install(args) -> None:
     if git:
         template = 'git+{repo}#egg={lib}'
         repo = template.format(**dict(repo=args.repo, lib=args.lib))
-        local(prefix + 'pip install -e %s --process-dependency-links' % repo)
+        os.system(prefix + 'pip install -e %s --process-dependency-links' % repo)
     os.system(prefix + 'pip freeze > requirements.txt')
 
 
@@ -143,8 +141,15 @@ def fab(args) -> None:
     '''
     Drop to Fabric
     '''
-    util.check_exec('fabric')
     os.system(prefix + 'fab %s' % ' '.join(sys.argv[2:]))
+
+
+@as_command
+def pip(args) -> None:
+    '''
+    Run to pip
+    '''
+    os.system(prefix + 'pip %s' % ' '.join(sys.argv[2:]))
 
 
 @as_command

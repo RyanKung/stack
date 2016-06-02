@@ -6,8 +6,6 @@ import os
 import stack.util as util
 from .decorators import ignore
 from functools import partial
-from os import listdir
-import sysconfig
 
 path = 'stack.yaml'
 

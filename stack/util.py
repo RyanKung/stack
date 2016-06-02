@@ -60,7 +60,9 @@ def check_and_update_via_stackfile(pattern):
 
 
 def get_execs() -> list:
-    return filter(lambda x: '-' not in x, os.listdir(sysconfig.get_path('scripts')))
+    if os.path.exists('.env'):
+        return list(filter(lambda x: '' not in x, os.listdir('.env/bin')))
+    return list(filter(lambda x: '-' not in x, os.listdir(sysconfig.get_path('scripts'))))
 
 
 def check_and_update_via_execsfile(pattern, prefix=''):
@@ -74,4 +76,24 @@ def check_and_update_via_execsfile(pattern, prefix=''):
 def check_exec(e: str) -> None:
     if e not in get_execs():
         error('You should run `stack install %s` first' % e)
-        sys.exit(1)
+        sys.exit()
+
+
+class AioCall(object):
+    def __init__(self, cmd):
+        self.cmd = cmd
+        self.io = sys.stdout
+        self.called = False
+
+    async def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        try:
+            return next(self.io)
+        except IOError:
+            if not self.called:
+                os.system(self.cmd)
+                self.called = True
+            else:
+                raise StopAsyncIteration
