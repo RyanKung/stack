@@ -46,12 +46,10 @@ setup(
     ],
     include_package_data=True,
     entry_points={'console_scripts': [
-        'stack = stack.main:main',
+        'stack = core.main:main',
         'scaffold = scaffold.main:main',
-        'pystack = stack.main:main',
-        'require = require.main:main',
-        'stack_init = stack.stack_init:main',
-        'pystack_init = stack.stack_init:main'
+        'pystack = core.main:main',
+        'require = require.main:main'
     ]},
 
 )

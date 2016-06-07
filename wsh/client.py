@@ -21,7 +21,8 @@ class aioInput(object):
         return res
 
 
-async def ws_client(session, addr='ws://127.0.0.1:8080/ws'):
+async def ws_client(session, host='ws://127.0.0.1', port='8964'):
+    addr = 'ws://{host}:{port}/ws'.format(host=host, port=port)
     async with session.ws_connect(addr) as ws:
         async for raw in aioInput():
             ws.send_str(raw)
@@ -40,10 +41,10 @@ async def ws_client(session, addr='ws://127.0.0.1:8080/ws'):
     return ws
 
 
-def main():
+def main(host='127.0.0.1', port='8964'):
     loop = asyncio.get_event_loop()
     with aiohttp.ClientSession(loop=loop) as client:
-        loop.run_until_complete(ws_client(session=client))
+        loop.run_until_complete(ws_client(session=client, host=host, port=port))
 
 if __name__ == '__main__':
     main()

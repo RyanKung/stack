@@ -1,3 +1,6 @@
 [submodule "docs"]
 	path = docs
 	url = http://github.com/ryankung/stack-doc
+[submodule "stack"]
+	path = stack
+	url = http://github.com/ryankung/stack-cli

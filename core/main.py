@@ -2,30 +2,21 @@
 import sys
 import os
 from typing import Callable
-from stack.args import parser
-import stack.config as config
-import stack.util as util
-from stack.decorators import as_command
+from stack import parser, as_command
+import stack.utils as util
+from stack.main import main as cli_main
+from stack.decorators import ignore
 import sysconfig
 import traceback
 
 
-__all__ = ['new', 'upgrade', 'clear', 'set_python', 'init',
+__all__ = ['new', 'upgrade', 'clear',
            'setup', 'install', 'uninstall', 'fab', 'test',
            'coverage', 'run', 'python', 'repl', 'doc',
            'serve', 'pep8_hook', 'pip']
 
-config_file_exist = config.exist()
 current_path = os.path.dirname(os.path.abspath(__file__))
-prefix = config.get_prefix()
-
-
-def ignore(fn: Callable, value):
-    '''ignore exceptiong'''
-    try:
-        return fn(value)
-    except:
-        return None
+prefix = util.get_env()
 
 
 @as_command
@@ -58,40 +49,12 @@ def clear(args) -> None:
 
 
 @as_command
-def set_python(args) -> None:
-    '''
-    Set python version
-    @argument --python, metavar=version, help=Version of Python
-    '''
-    config.write(dict(python=python))
-
-
-@as_command
-def init(args) -> None:
-    '''
-    Initalize a new project envirement
-    @argument --python, metavar=PATH, help=Version of Python, default=python3
-    @argument --install_all, metavar=all, help=Install all required lib
-    '''
-    python = args.python or 'python3'
-    config.write(dict(python=python))
-    config.write(dict(python_exec=prefix + 'python'))
-    os.system('virtualenv .env --python=%s' % python)
-    if args.install_all:
-        os.system(prefix + 'pip install ipython coverage flake8 nose coverage')
-
-
-@as_command
 def setup(args) -> None:
     '''
     Install libs from requirements.txt to venv
     @argument -r, --requirefile, default='requirement.txt', help=sepec requirement file
     '''
-    dependence = map(lambda x: x.split('==')[0], tuple(open('requirements.txt')))
     ignore(os.system, prefix + 'pip install -r ./requirements.txt --process-dependency-links')
-    projectname = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
-    config.write(dict(project=projectname))
-    config.write(dict(dependence=dependence))
 
 
 @as_command
@@ -179,8 +142,7 @@ def run(args) -> None:
     if args.remote:
         return os.system('require run %s' % args.remote)
     else:
-        python = config.load().get('python', 'python')
-        return os.system(prefix + '%s %s' % (python, ' '.join(sys.argv[2:])))
+        return os.system(prefix + 'python %s' % ' '.join(sys.argv[2:]))
 
 
 @as_command
@@ -188,8 +150,7 @@ def python(args) -> None:
     '''
     Run python
     '''
-    python = config.load().get('python', 'python')
-    return os.system(prefix + '%s %s' % (python, ' '.join(sys.argv[2:])))
+    return os.system(prefix + 'python %s' % ' '.join(sys.argv[2:]))
 
 
 @as_command
@@ -241,17 +202,15 @@ def router(pattern: dict, argv) -> Callable:
 
 def main():
     pattern = {k: v for k, v in globals().items() if k in __all__}
-    util.check_and_update_via_stackfile(pattern)
-    util.check_and_update_via_execsfile(pattern, prefix)
-    util.info('Using %spython' % (prefix or (util.is_venv() and 'Venv') or 'System Default '))
-    if len(sys.argv) > 1 and not config.has_venv() and not sys.argv[1] == 'init' and not util.is_venv():
-        util.warn('Command running outside the venv, you may need to run `stack init` first, or activite your `venv`')
+    util.info('Using %spython' % prefix)
+    if not prefix:
+        util.warn('Command running outside the venv, you may need to activite your `venv` first')
         util.warn('Using lib path %s' % sysconfig.get_path('platlib'))
         util.info('Continue? (Y/n)')
         if input().upper() == 'N':
             sys.exit()
     try:
-        router(pattern, sys.argv)
+        cli_main(argv=sys.argv, pattern=pattern, allow=('stackfile', 'execfile'))
     except Exception as ex:
         util.error("Exception <%s>, Traceback:" % str(ex))
         util.error(traceback.format_exc())

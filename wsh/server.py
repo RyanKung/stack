@@ -33,10 +33,10 @@ async def wsh(request, handler=print):
     return ws
 
 
-def main():
+def main(host='127.0.0.1', port='8964'):
     app = web.Application()
     app.router.add_route('GET', '/ws', wsh)
-    web.run_app(app)
+    web.run_app(app, host=host, port=port)
 
 
 if __name__ == '__main__':
