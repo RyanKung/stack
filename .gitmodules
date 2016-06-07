@@ -4,3 +4,9 @@
 [submodule "stack"]
 	path = stack
 	url = http://github.com/ryankung/stack-cli
+[submodule "scaffold"]
+    path = scaffold
+    url = http://github.com/ryankung/scaffold
+[submodule "requirepy"]
+    path = require
+    url = http://github.com/ryankung/requirepy
