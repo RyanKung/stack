@@ -1,22 +1,37 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+from functools import partial
 from typing import Callable
 from stack import parser, as_command
 import stack.utils as util
 from stack.main import main as cli_main
 from stack.decorators import ignore
-import sysconfig
 import traceback
+import subprocess
 
 
 __all__ = ['new', 'upgrade', 'clear',
            'setup', 'install', 'uninstall', 'fab', 'test',
            'coverage', 'run', 'python', 'repl', 'doc',
-           'serve', 'pep8_hook', 'pip']
+           'serve', 'pep8_hook', 'pip', 'stop_serve']
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 prefix = util.get_env()
+
+
+def local(cmd, block=True):
+    res = partial(subprocess.Popen, shell=True,
+                  stdout=subprocess.PIPE,
+                  stderr=subprocess.PIPE,
+                  stdin=subprocess.PIPE)(cmd)
+    if block:
+        out = res.stdout.readline().decode()
+        err = res.stderr.readline().decode()
+        out and util.info(out)
+        err and util.error(err)
+        return res
+    return res
 
 
 @as_command
@@ -37,7 +52,7 @@ def upgrade(args) -> None:
     '''
     Upgrade Stack
     '''
-    os.system('pip uninstall stack && pip install stack')
+    local('pip uninstall stack && pip install stack')
 
 
 @as_command
@@ -45,7 +60,7 @@ def clear(args) -> None:
     '''
     Remove virtualenv
     '''
-    ignore(os.system, 'rm -rf .env')
+    ignore(local, 'rm -rf .env')
 
 
 @as_command
@@ -54,7 +69,7 @@ def setup(args) -> None:
     Install libs from requirements.txt to venv
     @argument -r, --requirefile, default='requirement.txt', help=sepec requirement file
     '''
-    ignore(os.system, prefix + 'pip install -r ./requirements.txt --process-dependency-links')
+    ignore(local, prefix + 'pip install -r ./requirements.txt --process-dependency-links')
 
 
 @as_command
@@ -65,15 +80,15 @@ def install(args) -> None:
     @argument --repo, metavar=repo, help=Install via a git repo
     '''
     if not args.lib:
-        ignore(os.system, prefix + 'pip install -r ./requirements.txt --process-dependency-links')
+        ignore(local, prefix + 'pip install -r ./requirements.txt --process-dependency-links')
     git = bool(args.repo)
     if not git:
-        os.system(prefix + 'pip install %s -v --process-dependency-links' % args.lib)
+        local(prefix + 'pip install %s -v --process-dependency-links' % args.lib)
     if git:
         template = 'git+{repo}#egg={lib}'
         repo = template.format(**dict(repo=args.repo, lib=args.lib))
-        os.system(prefix + 'pip install -e %s --process-dependency-links' % repo)
-    os.system(prefix + 'pip freeze > requirements.txt')
+        local(prefix + 'pip install -e %s --process-dependency-links' % repo)
+    local(prefix + 'pip freeze > requirements.txt')
 
 
 @as_command
@@ -83,7 +98,7 @@ def uninstall(args) -> None:
     @argument lib, metavar=LIB, help=Lib name
     '''
     util.check_exec('pip')
-    return os.system(prefix + 'pip uninstall %s' % args.lib)
+    return local(prefix + 'pip uninstall %s' % args.lib)
 
 
 @as_command
@@ -96,7 +111,7 @@ def installed(args) -> None:
         list(map(print, pip.commands.freeze.freeze()))
     else:
         util.check_exec('pip')
-        os.system(prefix + 'pip freeze')
+        local(prefix + 'pip freeze')
 
 
 @as_command
@@ -104,7 +119,7 @@ def fab(args) -> None:
     '''
     Drop to Fabric
     '''
-    os.system(prefix + 'fab %s' % ' '.join(sys.argv[2:]))
+    local(prefix + 'fab %s' % ' '.join(sys.argv[2:]))
 
 
 @as_command
@@ -112,7 +127,7 @@ def pip(args) -> None:
     '''
     Run to pip
     '''
-    os.system(prefix + 'pip %s' % ' '.join(sys.argv[2:]))
+    local(prefix + 'pip %s' % ' '.join(sys.argv[2:]))
 
 
 @as_command
@@ -120,7 +135,7 @@ def test(args) -> None:
     '''
     Run unittest with nosetests
     '''
-    return os.system(prefix + 'nosetests -sv')
+    return local(prefix + 'nosetests -sv')
 
 
 @as_command
@@ -130,7 +145,7 @@ def coverage(args) -> None:
     '''
     util.check_exec('nosetests')
     project = os.path.split(os.path.dirname(os.path.realpath(__name__)))[-1]
-    return os.system(prefix + 'nosetests -sv --with-coverage --cover-package %s' % project)
+    return local(prefix + 'nosetests -sv --with-coverage --cover-package %s' % project)
 
 
 @as_command
@@ -140,9 +155,9 @@ def run(args) -> None:
     @argument --remote, metavar=remote, help=run as remote file
     '''
     if args.remote:
-        return os.system('require run %s' % args.remote)
+        return local('require run %s' % args.remote)
     else:
-        return os.system(prefix + 'python %s' % ' '.join(sys.argv[2:]))
+        return local(prefix + 'python %s' % ' '.join(sys.argv[2:]))
 
 
 @as_command
@@ -150,7 +165,7 @@ def python(args) -> None:
     '''
     Run python
     '''
-    return os.system(prefix + 'python %s' % ' '.join(sys.argv[2:]))
+    return local(prefix + 'python %s' % ' '.join(sys.argv[2:]))
 
 
 @as_command
@@ -159,7 +174,7 @@ def repl(args) -> None:
     Call ipython as repl
     '''
     util.check_exec('ipython')
-    return os.system(prefix + 'ipython' % ' '.join(sys.argv[2:]))
+    return local(prefix + 'ipython' % ' '.join(sys.argv[2:]))
 
 
 @as_command
@@ -168,7 +183,7 @@ def doc(args) -> None:
     Auto gen document
     '''
     util.check_exec('sphinx')
-    return os.system('sphinx-apidoc ./ -o ./docs -f -M -F')
+    return local('sphinx-apidoc ./ -o ./docs -f -M -F')
 
 
 @as_command
@@ -177,11 +192,27 @@ def serve(args) -> None:
     Serve current dir as as git daemon
     @argument --ip, help=IP addr
     @argument --port, help=Port
+    @argument --daemon, help=Run as daemon, default=1
+    @argument --pidfile, help=Pid file, default=./git-daemon.pid
     '''
+    if os.path.exists(args.pidfile):
+        ignore(stop_serve)(args)
     port = args.port or '30976'
     ip = args.ip or '0.0.0.0'
-    print('git daemon will listen on %s:%s/.git' % (ip, port))
-    return os.system('git daemon --reuseaddr --base-path=. --export-all --verbose --enable=receive-pack --port=%s --listen=%s' % (port, ip))
+    util.info('git daemon will listen on %s:%s/.git' % (ip, port))
+    cmd = 'git daemon --reuseaddr --base-path=. --export-all \
+    --verbose --enable=receive-pack --port=%s --listen=%s --pid-file=./git-daemon.pid' % (port, ip)
+    local(cmd, block=bool(int(args.daemon)))
+
+
+@as_command
+def stop_serve(args) -> None:
+    '''
+    Stop git serve
+    @argument --pidfile, help=Pid file, default=./git-daemon.pid
+    '''
+    util.info('try killing processing')
+    local('cat %s | xargs kill && rm %s' % (args.pidfile, args.pidfile))
 
 
 @as_command
@@ -189,7 +220,7 @@ def pep8_hook(args) -> None:
     '''
     Add a pre commit hook to your .git repo
     '''
-    os.system('flake8 --install-hook')
+    local('flake8 --install-hook')
 
 
 def router(pattern: dict, argv) -> Callable:
@@ -202,13 +233,7 @@ def router(pattern: dict, argv) -> Callable:
 
 def main():
     pattern = {k: v for k, v in globals().items() if k in __all__}
-    util.info('Using %spython' % prefix)
-    if not prefix:
-        util.warn('Command running outside the venv, you may need to activite your `venv` first')
-        util.warn('Using lib path %s' % sysconfig.get_path('platlib'))
-        util.info('Continue? (Y/n)')
-        if input().upper() == 'N':
-            sys.exit()
+    util.info('Using %spython' % (prefix and 'dfault'))
     try:
         cli_main(argv=sys.argv, pattern=pattern, allow=('stackfile', 'execfile'))
     except Exception as ex:
