@@ -194,7 +194,10 @@ def serve(args) -> None:
     @argument --port, help=Port
     @argument --daemon, help=Run as daemon, default=1
     @argument --pidfile, help=Pid file, default=./git-daemon.pid
+    @argument --stop, default=0, help=stop git daemon
     '''
+    if bool(int(args.stop)):
+        return stop_serve(args)
     if os.path.exists(args.pidfile):
         ignore(stop_serve)(args)
     port = args.port or '30976'
