@@ -3,7 +3,7 @@ import sys
 import os
 from functools import partial
 from typing import Callable
-from stack import parser, as_command
+from stack import parser, as_command, pattern
 import stack.utils as util
 from stack.main import main as cli_main
 from stack.decorators import ignore
@@ -235,7 +235,7 @@ def router(pattern: dict, argv) -> Callable:
 
 
 def main():
-    pattern = {k: v for k, v in globals().items() if k in __all__}
+    pattern.update({k: v for k, v in globals().items() if k in __all__})
     util.info('Using %spython' % (prefix and 'dfault'))
     try:
         cli_main(argv=sys.argv, pattern=pattern, allow=('stackfile', 'execfile'))
