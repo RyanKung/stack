@@ -205,10 +205,11 @@ def serve(args) -> None:
     util.info('git daemon will listen on %s:%s/.git' % (ip, port))
     cmd = 'git daemon --reuseaddr --base-path=. --export-all \
     --verbose --enable=receive-pack --port=%s --listen=%s --pid-file=./git-daemon.pid' % (port, ip)
-    local(cmd, block=bool(int(args.daemon)))
+    local(cmd, block=not bool(int(args.daemon)))
 
 
 @as_command
+@ignore
 def stop_serve(args) -> None:
     '''
     Stop git serve
