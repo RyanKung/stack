@@ -238,7 +238,7 @@ def main():
     pattern.update({k: v for k, v in globals().items() if k in __all__})
     util.info('Using %spython' % (prefix and 'dfault'))
     try:
-        cli_main(argv=sys.argv, pattern=pattern, allow=('stackfile'))
+        cli_main(argv=sys.argv, pattern=pattern, allow=('stackfile', ))
     except Exception as ex:
         util.error("Exception <%s>, Traceback:" % str(ex))
         util.error(traceback.format_exc())
