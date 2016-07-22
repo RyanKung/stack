@@ -19,6 +19,8 @@ Include:
 
 * stack / pystack
 
+* stack-cli -- The core part of stack
+
 * scaffold  -- A Python template generator
 
 * require  -- An async remote module loader
@@ -84,7 +86,7 @@ Quick Start:
 
     stack doc
 
-* P2P git baseed deployment:
+* ad-hoc git baseed deployment:
 
   on remote production server::
 
@@ -95,3 +97,14 @@ Quick Start:
       git add remote production git://<your remote ip>:30976/.git
       git checkout release/<your release branch>
       git push production HEAD
+
+
+Work with stackfile
+
+* stackfile
+
+  stackfile is a local config file like makefile/gruntfile/glupfile/etc., the `stack-cli` will automacily load in the stackfile when boot.
+
+* decorators
+
+  For the newest version of `stack-cli`, there is two useful decorators: `@as_command` and `@wsh_command`, the first decorator allows function be called as stack command, and the `wsh_command` decorator can map a local command function to a remote callable function. Which means that you can call the command via `stack wsh` or `restful api` of stack cli.
