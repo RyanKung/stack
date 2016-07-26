@@ -107,4 +107,4 @@ Work with stackfile
 
 * decorators
 
-  For the newest version of `stack-cli`, there is two useful decorators: `@as_command` and `@wsh_command`, the first decorator allows function be called as stack command, and the `wsh_command` decorator can map a local command function to a remote callable function. Which means that you can call the command via `stack wsh` or `restful api` of stack cli.
+  For the newest version of `stack-cli`, there is two useful decorators: `@as_command` and `@wsh_command`, the first decorator allows function be called as stack command, and the `wsh_command` decorator can map a local command function to a remote callable function. Which means that you can call the command via `stack wsh` or `restful api` of stack cli
