@@ -192,7 +192,7 @@ def serve(args) -> None:
     Serve current dir as as git daemon
     @argument --ip, help=IP addr
     @argument --port, help=Port
-    @argument --daemon, help=Run as daemon, default=1
+    @argument --daemon, help=Run as daemon, default=0
     @argument --pidfile, help=Pid file, default=./git-daemon.pid
     @argument --stop, default=0, help=stop git daemon
     '''
